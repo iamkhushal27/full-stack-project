@@ -18,10 +18,8 @@ function Login() {
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
-      Name: "",
       email: "",
       password: "",
-      termsOfService: false,
     },
 
     validate: {
@@ -64,52 +62,48 @@ function Login() {
 
             <Flex
               justify="center"
-              h="100%"
+              h="80vh"
+              w="35vw"
               align="center"
               direction="column"
               gap="xl"
             >
-              <Title order={1} c="white">
-                Welcome to the website
-              </Title>
-              <Paper p="xl">
-                <form onSubmit={form.onSubmit((values) => console.log(values))}>
+              <form onSubmit={form.onSubmit((values) => console.log(values))}>
+                <Flex gap="lg" direction="column">
                   <TextInput
                     withAsterisk
-                    label="Name"
-                    placeholder="Enter your name"
-                    key={form.key("name")}
-                    {...form.getInputProps("name")}
-                  />
-                  <TextInput
-                    withAsterisk
-                    label="Email"
                     placeholder="your@email.com"
                     key={form.key("email")}
                     {...form.getInputProps("email")}
+                    w="30vw"
+                    styles={{
+                      input: {
+                        border: "1px solid #565454",
+                        padding: "20px",
+                      },
+                    }}
                   />
                   <PasswordInput
                     withAsterisk
-                    label="Passwrod"
                     placeholder="Password"
                     key={form.key("password")}
-                    {...form.getInputProps("passsword")}
+                    {...form.getInputProps("password")}
+                    w="30vw"
+                    styles={{
+                      input: {
+                        border: "1px solid #565454",
+                        padding: "20px",
+                      },
+                    }}
                   />
+                </Flex>
 
-                  <Checkbox
-                    mt="md"
-                    label="I agree to sell my privacy"
-                    key={form.key("termsOfService")}
-                    {...form.getInputProps("termsOfService", {
-                      type: "checkbox",
-                    })}
-                  />
-
-                  <Group justify="flex-end" mt="md">
-                    <Button type="submit">Submit</Button>
-                  </Group>
-                </form>
-              </Paper>
+                <Group mt="md">
+                  <Button type="submit" bg="#FF9090" radius="sm">
+                    Login
+                  </Button>
+                </Group>
+              </form>
             </Flex>
           </Flex>
         </Paper>

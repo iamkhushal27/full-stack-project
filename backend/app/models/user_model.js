@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   // 🔗 Associations
- 
+
   User.associate = (models) => {
     User.hasMany(models.Todo, {
       foreignKey: "userId",
@@ -49,7 +49,6 @@ module.exports = (sequelize, DataTypes) => {
       onUpdate: "CASCADE",
     });
   };
-  
 
   return User;
 };

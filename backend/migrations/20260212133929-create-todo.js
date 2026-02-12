@@ -1,7 +1,9 @@
-module.exports = (sequelize, DataTypes) => {
-  const Todo = sequelize.define(
-    "Todo",
-    {
+"use strict";
+var { DataTypes } = require("sequelize");
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable("todos", {
       id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -25,22 +27,17 @@ module.exports = (sequelize, DataTypes) => {
       userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        references: {
+          model: "users", // 👈 parent table name
+          key: "id",
+        },
+        onDelete: "CASCADE", // 👈 Important
+        onUpdate: "CASCADE",
       },
-    },
-    {
-      tableName: "todos",
-      timestamps: true,
-    }
-  );
-
-  Todo.associate = (models) => {
-    Todo.belongsTo(models.User, {
-      foreignKey: "userId",
-      as: "user",
-      onDelete: "CASCADE",
-      onUpdate: "CASCADE",
     });
-  };
+  },
 
-  return Todo;
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable("todos");
+  },
 };

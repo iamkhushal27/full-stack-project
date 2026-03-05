@@ -1,6 +1,7 @@
 const express = require('express')
 const cors = require('cors')
 const cookieparser=require('cookie-parser')
+const errorHandler = require('./app/middleware/error.middleware')
 
 require('dotenv').config()
 
@@ -14,6 +15,7 @@ app.use(cors({
     credentials: true
 }))
 app.use(cookieparser())
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

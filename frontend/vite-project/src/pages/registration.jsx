@@ -13,8 +13,21 @@ import {
 import { useForm } from "@mantine/form";
 import img from "../assets/R 2.png";
 import background from "../assets/background.png";
+import { userRegister } from "../service/user.service";
 
 function Registration() {
+  const {
+    mutate: registerUser,
+    isPending,
+    isSuccess,
+    isError,
+  } = userRegister();
+  
+  const handleRegister=(data)=>{
+    console.log(data)
+    registerUser(data)
+  }
+
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
@@ -30,6 +43,9 @@ function Registration() {
         value !== values.password ? "Passwords do not match" : null,
     },
   });
+  if (isPending) {
+    return <div>loading...</div>;
+  }
 
   return (
     <Box
@@ -72,7 +88,7 @@ function Registration() {
               direction="column"
               gap="xl"
             >
-              <form onSubmit={form.onSubmit((values) => console.log(values))}>
+              <form onSubmit={form.onSubmit((values) => handleRegister(values))}>
                 <Flex gap="lg" direction="column">
                   <TextInput
                     withAsterisk

@@ -1,28 +1,40 @@
-const User = require("../models/user_model");
+const db = require("../models");
+const User = db.User;
 const {passwordHashing} = require("../utils/passwordhashing");
 
 module.exports = {
   checkingEmail: async function (email) {
-    const user = await User.findOne({
-      where: {
-        email,
-      },
-    });
-    return user;
+    try {
+      console.log(email)
+      const user = await User.findOne({
+        where: {
+          email,
+        },
+      });
+      console.log('outt')
+      console.log(user)
+      return user;
+    } catch (error) {
+      console.log(error)
+    }
+   
   },
   checkingUserName: async function (userName) {
+    console.log(userName)
     const user = await User.findOne({
       where: {
-        userName,
+       name: userName,
       },
     });
+    console.log(user)
     return user;
   },
-  creatingUser: async function ({ userName, email, password }) {
+  creatingUser: async function ({ name, email, password }) {
     const hashedPassword = await passwordHashing(password);
     console.log(hashedPassword);
+
     const user = await User.create({
-      userName,
+      name:name,
       email,
       password: hashedPassword,
     });

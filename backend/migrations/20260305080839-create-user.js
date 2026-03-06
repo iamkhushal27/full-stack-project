@@ -1,5 +1,6 @@
 "use strict";
 var { DataTypes } = require("sequelize");
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -11,7 +12,7 @@ module.exports = {
         allowNull: false,
       },
 
-      profileImage: {
+      profile_image: {        // ✅ snake_case
         type: DataTypes.STRING,
         allowNull: true,
       },
@@ -34,6 +35,14 @@ module.exports = {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      created_at: {           // ✅ required when underscored: true
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+      updated_at: {           // ✅ required when underscored: true
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
     });
   },
 
@@ -41,3 +50,4 @@ module.exports = {
     await queryInterface.dropTable("users");
   },
 };
+

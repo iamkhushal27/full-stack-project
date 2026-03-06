@@ -16,17 +16,18 @@ const { passwordDecrypting } = require("../utils/passwordhashing");
 module.exports = {
   userRegister: async function (req, res, next) {
     try {
-      const { userName, email, password } = req.body;
+      const { name, email, password } = req.body;
+      console.log('inside')
 
       const emailExists = await checkingEmail(email);
       if (emailExists?.email) {
         throw new ConflictError("Email is already exists");
       }
-      const userNameExists = await checkingUserName(userName);
+      const userNameExists = await checkingUserName(name);
       if (userNameExists?.userName) {
         throw new ConflictError("userName is already exists");
       }
-      const user = await creatingUser({ userName, email, password });
+      const user = await creatingUser({ name, email, password });
       res.status(201).json({
         status: "success",
         message: "User registered successfully",

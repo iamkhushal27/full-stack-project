@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
 
-      profileImage: {
+      profile_image: {        // ✅ snake_case
         type: DataTypes.STRING,
         allowNull: true,
       },
@@ -36,6 +36,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       tableName: "users",
       timestamps: true, // Sequelize handles createdAt & updatedAt
+      underscored: true, 
     }
   );
 

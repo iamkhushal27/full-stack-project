@@ -13,6 +13,7 @@ import {
 import { useForm } from "@mantine/form";
 import img from "../assets/R 2.png";
 import background from "../assets/background.png";
+import { userLogin } from "../service/login.service";
 
 function Login() {
   const form = useForm({
@@ -26,6 +27,14 @@ function Login() {
       email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
     },
   });
+
+  const { mutate: loginUser, isPending, isSuccess, isError } = userLogin();
+  const handleSubmit = (data) => {
+    loginUser(data);
+  };
+  if (isPending) {
+    return <div>loading...</div>
+  }
 
   return (
     <Box
@@ -68,7 +77,7 @@ function Login() {
               direction="column"
               gap="xl"
             >
-              <form onSubmit={form.onSubmit((values) => console.log(values))}>
+              <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
                 <Flex gap="lg" direction="column">
                   <TextInput
                     withAsterisk

@@ -3,7 +3,6 @@ const {
   checkingEmail,
   checkingUserName,
   creatingUser,
-  generatingToken,
   userNameExists,
 } = require("../services/user_service");
 const {
@@ -11,14 +10,20 @@ const {
   ConflictError,
   UnauthorizedError,
 } = require("../utils/error");
+const { generatingToken } = require("../utils/generatingToken");
 const { passwordDecrypting } = require("../utils/passwordhashing");
+
+
+
+
+
 
 module.exports = {
   userRegister: async function (req, res, next) {
     try {
       const { name, email, password } = req.body;
       console.log('inside')
-
+gena
       const emailExists = await checkingEmail(email);
       if (emailExists?.email) {
         throw new ConflictError("Email is already exists");
@@ -37,7 +42,7 @@ module.exports = {
       next(error);
     }
   },
-  login: async function (req, res, next) {
+  userlogin: async function (req, res, next) {
     try {
       const { email, password } = req.body;
 
@@ -50,6 +55,8 @@ module.exports = {
       if (!existingUser) {
         throw new UnauthorizedError("Invalid email or password");
       }
+      console.log(existingUser.password)
+      console.log(password)
 
       const isPasswordValid = await passwordDecrypting(
         password,
@@ -61,6 +68,7 @@ module.exports = {
       }
 
       const token = await generatingToken(existingUser?.id);
+      
 
       res
         .cookie("token", token, {

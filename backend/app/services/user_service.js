@@ -2,6 +2,8 @@ const db = require("../models");
 const User = db.User;
 const {passwordHashing} = require("../utils/passwordhashing");
 
+
+
 module.exports = {
   checkingEmail: async function (email) {
     try {
@@ -40,8 +42,5 @@ module.exports = {
     });
     return user;
   },
-  generatingToken: async function (userId) {
-    const token = await jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    return token;
-  },
+  
 };

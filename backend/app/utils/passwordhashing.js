@@ -10,7 +10,7 @@ async function passwordHashing(password) {
 }
 async function passwordDecrypting( password, oldpassword) {
   try {
-    const decryptPassword = await argon2.verify(password, oldpassword);
+    const decryptPassword = await argon2.verify( oldpassword,password);
     return decryptPassword;
   } catch (err) {
     throw new Error("Failed to verify password");

@@ -11,17 +11,27 @@ function TodoChip() {
         </Flex>
         <Box w="100%">
           <Stack w="100%" gap={2}>
-            <Flex gap={6} ml="sm">
-              <HiDotsHorizontal />
-              <Text size="lg" fw="bold">
+            <Flex gap="md" ml="sm">
+              <Box
+                w="1vw"
+                h="1vw"
+                style={{
+                  border: "2px solid black",
+                  borderRadius: "50%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              ></Box>
+
+                
+              <Text fz={16} fw="bold">
                 Landing Page Design for travel days
               </Text>
             </Flex>
             <Flex w="90%" ml="xl" justify="space-between" align="center">
-              <Text w="70%" fz="md">
+              <Text w="70%" fz={14}>
                 Landing Page Design for travel daysLanding Page Design for
-                travel daysLanding Page Design for travel daysLanding Page
-                Design for travel days
               </Text>
 
               <Avatar

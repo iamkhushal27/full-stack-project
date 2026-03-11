@@ -1,43 +1,69 @@
 "use strict";
-var { DataTypes } = require("sequelize");
+
 /** @type {import('sequelize-cli').Migration} */
+
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("todos", {
       id: {
-        type: DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true,
         allowNull: false,
       },
 
       title: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
+
       description: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
 
       completed: {
-        type: DataTypes.BOOLEAN,
+        type: Sequelize.BOOLEAN,
         defaultValue: false,
       },
-      userId: {
-        type: DataTypes.INTEGER,
+      role: {
+        type: Sequelize.ENUM("extreme", "moderate", "low"),
+        allowNull: false,
+        defaultValue: "low",
+      },
+      task_image: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      date: {                          // ✅ added
+        type: Sequelize.DATEONLY,          // stores YYYY-MM-DD, no time
+        allowNull: false,                   // optional — user may not set a due date
+      },
+
+      user_id: {
+        type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: "users", // 👈 parent table name
+          model: "users",
           key: "id",
         },
-        onDelete: "CASCADE", // 👈 Important
+        onDelete: "CASCADE",
         onUpdate: "CASCADE",
+      },
+
+      created_at: {
+        allowNull: false,
+        type: Sequelize.DATE,
+      },
+
+      updated_at: {
+        allowNull: false,
+        type: Sequelize.DATE,
       },
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.dropTable("todos");
   },
 };

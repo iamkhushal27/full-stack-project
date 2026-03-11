@@ -8,7 +8,7 @@ import {
   Avatar,
   NavLink,
 } from "@mantine/core";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, Link } from "react-router-dom";
 import { GoSearch } from "react-icons/go";
 import { IoIosNotifications } from "react-icons/io";
 import { FaCalendarAlt } from "react-icons/fa";
@@ -18,32 +18,34 @@ import IconBox from "./components/iconBox";
 
 function App() {
   const location = useLocation();
-  const [active, setActive] = useState(0);
+
+ 
   const data = [
-    { icon: IoIosNotifications, label: "Dashboard" },
-    {
-      icon: IoIosNotifications,
-      label: "Security",
-    },
-    { icon: IoIosNotifications, label: "Activity" },
+    { icon: IoIosNotifications, label: "Dashboard", href: "/" },
+
+    { icon: IoIosNotifications, label: "Settings", href: "/settings" },
   ];
   const items = data.map((item, index) => (
     <NavLink
-      href="#required-for-focus"
+      component={Link} // 👈 Use React Router's Link
+      to={item.href}
       key={item.label}
-      active={index === active}
+      active={location.pathname === item.href}
       label={item.label}
       description={item.description}
       rightSection={item.rightSection}
-      leftSection={<item.icon size={16} stroke={1.5} />}
-      onClick={() => setActive(index)}
+      leftSection={<item.icon size={24} stroke={1.5} />}
       w="80%"
       styles={{
         root: {
-          backgroundColor: index === active ? "white" : "transparent",
-          color: index === active ? "red" : "white",
-          borderRadius: "8px",
-          margin: "0% 10%",
+          backgroundColor:
+            location.pathname === item.href ? "white" : "transparent",
+          color: location.pathname === item.href ? "#FF6767" : "white",
+          borderRadius: "16px",
+          margin: "5% 10%",
+        },
+        label: {
+          fontSize: "16px",
         },
       }}
       variant="filled"
@@ -89,7 +91,7 @@ function App() {
         </Flex>
       </Box>
       <Flex h="90vh" gap="xl">
-        <Box h="83vh" mt="7vh" w="20vw" bg="red" bdrs="sm">
+        <Box h="83vh" mt="7vh" w="20vw" bg="#FF6767" bdrs="sm">
           <Flex pos="relative" bottom={40} align="center" direction="column">
             <Avatar
               size="xl"

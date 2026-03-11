@@ -4,7 +4,7 @@ import { HiDotsHorizontal } from "react-icons/hi";
 import TodoChip from "../components/todochip";
 import { DonutChart } from "@mantine/charts";
 
-function Home() {
+function Dashboard() {
   const data = [
     { name: "USA", value: 400, color: "indigo.6" },
     { name: "India", value: 300, color: "yellow.6" },
@@ -23,11 +23,11 @@ function Home() {
           bdrs="md"
           style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
         >
-          <Flex  justify="space-between" m="md">
+          <Flex justify="space-between" m="md">
             <Text>TO-DO</Text>
             <Text>Add task</Text>
           </Flex>
-          <Flex  ml="md" gap="md">
+          <Flex ml="md" gap="md">
             <Text>20 june</Text>
             <Text>. today</Text>
           </Flex>
@@ -58,6 +58,7 @@ function Home() {
               <DonutChart
                 h="80%"
                 w="30%"
+                miw="150"
                 thickness={20}
                 data={data}
                 withTooltip={false}
@@ -65,6 +66,7 @@ function Home() {
               <DonutChart
                 h="80%"
                 w="30%"
+                miw="150"
                 thickness={20}
                 data={data}
                 withTooltip={false}
@@ -72,6 +74,7 @@ function Home() {
               <DonutChart
                 h="80%"
                 w="30%"
+                miw="150"
                 thickness={20}
                 data={data}
                 withTooltip={false}
@@ -96,4 +99,4 @@ function Home() {
     </>
   );
 }
-export default Home;
+export default Dashboard;

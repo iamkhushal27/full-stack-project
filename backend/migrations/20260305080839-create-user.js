@@ -1,53 +1,54 @@
 "use strict";
-var { DataTypes } = require("sequelize");
 
 /** @type {import('sequelize-cli').Migration} */
+
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("users", {
       id: {
-        type: DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true,
         allowNull: false,
       },
 
-      profile_image: {        // ✅ snake_case
-        type: DataTypes.STRING,
+      profile_image: {
+        type: Sequelize.STRING,
         allowNull: true,
       },
 
       name: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
 
       email: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
         unique: true,
-        validate: {
-          isEmail: true,
-        },
       },
 
       password: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
-      created_at: {           // ✅ required when underscored: true
-        type: DataTypes.DATE,
+
+      created_at: {
+        type: Sequelize.DATE,
         allowNull: false,
+        defaultValue: Sequelize.NOW,
       },
-      updated_at: {           // ✅ required when underscored: true
-        type: DataTypes.DATE,
+
+      updated_at: {
+        type: Sequelize.DATE,
         allowNull: false,
+        defaultValue: Sequelize.NOW,
       },
     });
   },
 
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("users");
+  async down(queryInterface) {
+    await queryInterface.dropTable("todos");   // ✅ drop child table first
+    await queryInterface.dropTable("users");   // ✅ then drop parent
   },
 };
-

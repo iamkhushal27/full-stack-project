@@ -19,11 +19,11 @@ import IconBox from "./components/iconBox";
 function App() {
   const location = useLocation();
 
- 
   const data = [
     { icon: IoIosNotifications, label: "Dashboard", href: "/" },
 
     { icon: IoIosNotifications, label: "Settings", href: "/settings" },
+    { icon: IoIosNotifications, label: "My Account", href: "/myaccount" },
   ];
   const items = data.map((item, index) => (
     <NavLink
@@ -91,14 +91,21 @@ function App() {
         </Flex>
       </Box>
       <Flex h="90vh" gap="xl">
-        <Box h="83vh" mt="7vh" w="20vw" bg="#FF6767" bdrs="sm">
+        <Box
+          h="83vh"
+          mt="7vh"
+          w="20vw"
+          bg="#FF6767"
+          bdrs="md"
+          style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+        >
           <Flex pos="relative" bottom={40} align="center" direction="column">
             <Avatar
               size="xl"
               src="https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-6.png"
             ></Avatar>
           </Flex>
-          <Box>{items}</Box>
+          <Box> {items}</Box>
         </Box>
         <Box h="83vh" w="80vw" mt="7vh">
           <Outlet />

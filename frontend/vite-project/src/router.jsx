@@ -4,6 +4,7 @@ import Dashboard from "./pages/home";
 import Registration from "./pages/registration";
 import Login from "./pages/login";
 import Settings from "./pages/dashboard";
+import MyAccount from "./pages/myaccount";
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
       {
         path:"settings",
         Component: Settings,
+      },
+      {
+        path:"myaccount",
+        Component: MyAccount,
       },
     ],
   },

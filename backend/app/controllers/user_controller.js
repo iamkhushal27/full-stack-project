@@ -4,6 +4,7 @@ const {
   findUserByUsername,
   createUser,
   getUserById,
+  updateUser,
 } = require("../services/user_service");
 const {
   BadRequestError,
@@ -39,7 +40,7 @@ module.exports = {
       next(error);
     }
   },
-  userlogin: async function (req, res, next) {
+  userLogin: async function (req, res, next) {
     try {
       const { email, password } = req.body;
       if (!email || !password) {
@@ -59,7 +60,7 @@ module.exports = {
         throw new UnauthorizedError("Invalid email or password");
       }
       const token = await generateToken(existingUserByEmail?.id);
-      console.log("done")
+      console.log("done");
       res
         .status(200)
         .cookie("token", token, {
@@ -74,10 +75,22 @@ module.exports = {
       next(error);
     }
   },
-  getUser: async (req, res, next) => {
+  userSingle: async (req, res, next) => {
     try {
       const user = req.user;
       res.status(201).json(user);
+    } catch (error) {
+      next(error);
+    }
+  },
+  userUpdate: async (req, res, next) => {
+    try {
+      const user = req.user;
+      const data = req.body;
+      await updateUser(user.id, data);
+      const updatedUser = await getUserById(user);
+      console.log(updatedUser, "updataedUser");
+      res.status(201).json(updatedUser);
     } catch (error) {
       next(error);
     }

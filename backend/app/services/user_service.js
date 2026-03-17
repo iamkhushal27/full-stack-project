@@ -30,8 +30,11 @@ module.exports = {
     });
     return user;
   },
-  getUserById: async function (id) {
-    const user = await User.findByPk(id.userId);
+  getUserById: async function (data) {
+    const user = await User.findByPk(data.id);
     return user.dataValues;
+  },
+  updateUser: async function (id, data) {
+    await User.update(data, { where: { id } });
   },
 };

@@ -15,9 +15,13 @@ import img from "../assets/Group 53.png";
 import { useForm, isNotEmpty } from "@mantine/form";
 import { DateInput } from "@mantine/dates";
 import { useState } from "react";
+import { todoCreate } from "../service/todo.service";
+import { useFileUpload } from "../service/file.service";
 
 function AddTodoModal({ opened, close, open }) {
+  const { mutate } = todoCreate();
   const [preview, setPreview] = useState(null);
+  const { mutate: fileUpload } = useFileUpload();
 
   const form = useForm({
     mode: "uncontrolled",
@@ -46,7 +50,30 @@ function AddTodoModal({ opened, close, open }) {
         withCloseButton={false}
         styles={{ content: { height: "75vh" }, body: { height: "90%" } }}
       >
-        <form onSubmit={form.onSubmit((values) => console.log(values))}>
+        <form
+          onSubmit={form.onSubmit((values) => {
+            console.log("inside");
+            if (preview) {
+              const formData = new FormData();
+              formData.append("profile_image", values.uploadImage);
+              fileUpload(formData, {
+                onSuccess: (data) => {
+                  mutate({
+                    title: values.title,
+                    date: values.date,
+                    priority: values.priority,
+                    description: values.description,
+                    uploadImage: data.data.url, // ✅ cloudinary URL
+                  });
+
+                  close();
+                  form.reset();
+                  setPreview(null);
+                },
+              });
+            }
+          })}
+        >
           <Stack gap="xl" h="100%" p="xl" w="100%">
             <Flex justify="space-between">
               <Text fw="bold">Add Task</Text>
@@ -259,7 +286,6 @@ function AddTodoModal({ opened, close, open }) {
                             id="fileInput"
                             clearable
                             placeholder="Browse"
-                            {...form.getInputProps("uploadImage")}
                             type="file"
                             accept="image/*"
                             onChange={(file) => {

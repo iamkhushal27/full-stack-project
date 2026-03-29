@@ -10,11 +10,11 @@ export function userLogin(userData) {
       console.log(error);
     },
     mutationFn: (userData) => {
-        console.log(userData)
-      return axios.post("http://localhost:3000/api/users/login", userData);
+      console.log(userData);
+      return axios.post("http://localhost:3000/api/users/login", userData, {
+        withCredentials: true, // <-- important
+      });
     },
   });
   return mutation;
 }
-
-

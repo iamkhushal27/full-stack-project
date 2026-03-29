@@ -1,46 +1,40 @@
 const db = require("../models");
+const { NotFoundError } = require("../utils/error");
 const User = db.User;
-const {passwordHashing} = require("../utils/passwordhashing");
-
-
+const { hashPassword } = require("../utils/passwordhashing");
 
 module.exports = {
-  checkingEmail: async function (email) {
-    try {
-      console.log(email)
-      const user = await User.findOne({
-        where: {
-          email,
-        },
-      });
-      console.log('outt')
-      console.log(user)
-      return user;
-    } catch (error) {
-      console.log(error)
-    }
-   
-  },
-  checkingUserName: async function (userName) {
-    console.log(userName)
+  findUserByEmail: async function (email) {
     const user = await User.findOne({
       where: {
-       name: userName,
+        email,
       },
     });
-    console.log(user)
     return user;
   },
-  creatingUser: async function ({ name, email, password }) {
-    const hashedPassword = await passwordHashing(password);
-    console.log(hashedPassword);
+  findUserByUsername: async function (userName) {
+    const user = await User.findOne({
+      where: {
+        name: userName,
+      },
+    });
 
+    return user;
+  },
+  createUser: async function ({ name, email, password }) {
+    const hashedPassword = await hashPassword(password);
     const user = await User.create({
-      name:name,
+      name: name,
       email,
       password: hashedPassword,
     });
     return user;
   },
-  
+  getUserById: async function (data) {
+    const user = await User.findByPk(data.id);
+    return user.dataValues;
+  },
+  updateUser: async function (id, data) {
+    await User.update(data, { where: { id } });
+  },
 };

@@ -1,38 +1,36 @@
 const User = require("../models/user_model");
 const {
-  checkingEmail,
-  checkingUserName,
-  creatingUser,
-  userNameExists,
+  findUserByEmail,
+  findUserByUsername,
+  createUser,
+  getUserById,
+  updateUser,
 } = require("../services/user_service");
 const {
   BadRequestError,
   ConflictError,
   UnauthorizedError,
 } = require("../utils/error");
-const { generatingToken } = require("../utils/generatingToken");
-const { passwordDecrypting } = require("../utils/passwordhashing");
-
-
-
-
-
+const { generateToken } = require("../utils/generatingToken");
+const { verifyPassword } = require("../utils/passwordhashing");
 
 module.exports = {
   userRegister: async function (req, res, next) {
     try {
       const { name, email, password } = req.body;
-      console.log('inside')
-gena
-      const emailExists = await checkingEmail(email);
-      if (emailExists?.email) {
-        throw new ConflictError("Email is already exists");
+      if (!name || !email || !name) {
+        throw new BadRequestError("UserName ,Email and password are required");
       }
-      const userNameExists = await checkingUserName(name);
-      if (userNameExists?.userName) {
-        throw new ConflictError("userName is already exists");
+
+      const existingUserByEmail = await findUserByEmail(email);
+      if (existingUserByEmail) {
+        throw new ConflictError("Email already exists");
       }
-      const user = await creatingUser({ name, email, password });
+      const existingUserByUserName = await findUserByUsername(name);
+      if (existingUserByUserName) {
+        throw new ConflictError("UserName already exists");
+      }
+      const user = await createUser({ name, email, password });
       res.status(201).json({
         status: "success",
         message: "User registered successfully",
@@ -42,45 +40,57 @@ gena
       next(error);
     }
   },
-  userlogin: async function (req, res, next) {
+  userLogin: async function (req, res, next) {
     try {
       const { email, password } = req.body;
-
       if (!email || !password) {
         throw new BadRequestError("Email and password are required");
       }
-
-      const existingUser = await checkingEmail(email);
-
-      if (!existingUser) {
+      const existingUserByEmail = await findUserByEmail(email);
+      if (!existingUserByEmail) {
         throw new UnauthorizedError("Invalid email or password");
       }
-      console.log(existingUser.password)
-      console.log(password)
 
-      const isPasswordValid = await passwordDecrypting(
+      const isPasswordValid = await verifyPassword(
         password,
-        existingUser.password
+        existingUserByEmail.password
       );
 
       if (!isPasswordValid) {
         throw new UnauthorizedError("Invalid email or password");
       }
-
-      const token = await generatingToken(existingUser?.id);
-      
-
+      const token = await generateToken(existingUserByEmail?.id);
+      console.log("done");
       res
+        .status(200)
         .cookie("token", token, {
           httpOnly: true,
-          secure: true,
-          maxAge: 3600000,
+          secure: false, // local dev
         })
-        .status(200)
         .json({
           status: "success",
           message: "Login successful",
         });
+    } catch (error) {
+      next(error);
+    }
+  },
+  userSingle: async (req, res, next) => {
+    try {
+      const user = req.user;
+      res.status(201).json(user);
+    } catch (error) {
+      next(error);
+    }
+  },
+  userUpdate: async (req, res, next) => {
+    try {
+      const user = req.user;
+      const data = req.body;
+      await updateUser(user.id, data);
+      const updatedUser = await getUserById(user);
+      console.log(updatedUser, "updataedUser");
+      res.status(201).json(updatedUser);
     } catch (error) {
       next(error);
     }

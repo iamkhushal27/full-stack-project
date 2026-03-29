@@ -14,6 +14,8 @@ import { useForm } from "@mantine/form";
 import img from "../assets/R 2.png";
 import background from "../assets/background.png";
 import { userLogin } from "../service/login.service";
+import { useQuery } from "@tanstack/react-query";
+import { getUserData } from "../service/user.service";
 
 function Login() {
   const form = useForm({
@@ -29,12 +31,19 @@ function Login() {
   });
 
   const { mutate: loginUser, isPending, isSuccess, isError } = userLogin();
+  const { data, refetch, isLoading } = useQuery({
+    queryKey: ["todos"],
+    queryFn: getUserData,
+    enabled: false, // auto calling stop 
+  });
   const handleSubmit = (data) => {
     loginUser(data);
   };
   if (isPending) {
-    return <div>loading...</div>
+    return <div>loading...</div>;
   }
+  
+
 
   return (
     <Box
@@ -113,6 +122,9 @@ function Login() {
                   </Button>
                 </Group>
               </form>
+              <Button bg="#FF9090" onClick={refetch} radius="sm">
+                data
+              </Button>
             </Flex>
           </Flex>
         </Paper>

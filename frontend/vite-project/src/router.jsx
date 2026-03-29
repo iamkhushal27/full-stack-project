@@ -1,8 +1,10 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
-import Home from "./pages/home";
+import Dashboard from "./pages/dashboard";
 import Registration from "./pages/registration";
 import Login from "./pages/login";
+import Settings from "./pages/settings";
+import MyAccount from "./pages/myaccount";
 
 const router = createBrowserRouter([
   {
@@ -11,7 +13,15 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        Component: Home,
+        Component: Dashboard,
+      },
+      {
+        path:"settings",
+        Component: Settings,
+      },
+      {
+        path:"myaccount",
+        Component: MyAccount,
       },
     ],
   },
@@ -25,6 +35,7 @@ const router = createBrowserRouter([
     Component: Login,
     
   },
+  
 ]);
 
 export default router;

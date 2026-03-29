@@ -21,20 +21,20 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
-      role: {
-        type: DataTypes.ENUM("extreme", "moderate", "low"),
-        allowNull: false,
-        defaultValue: "low",
-      },
       task_image: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      date: {                          // ✅ added
-        type: DataTypes.DATEONLY,          // stores YYYY-MM-DD, no time
-        allowNull: false,                   // optional — user may not set a due date
+      date: {
+        // ✅ added
+        type: DataTypes.DATEONLY, // stores YYYY-MM-DD, no time
+        allowNull: false, // optional — user may not set a due date
       },
       user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      category_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
@@ -49,8 +49,14 @@ module.exports = (sequelize, DataTypes) => {
   // 🔗 Associations
   Todo.associate = (models) => {
     Todo.belongsTo(models.User, {
-      foreignKey: "userId",
+      foreignKey: "user_id",
       as: "user",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+    });
+    Todo.belongsTo(models.Category, {
+      foreignKey: "category_id",
+      as: "category",
       onDelete: "CASCADE",
       onUpdate: "CASCADE",
     });

@@ -96,7 +96,7 @@ function App() {
           mt="7vh"
           w="20vw"
           bg="#FF6767"
-          bdrs="md"
+          bdrs=""
           style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
         >
           <Flex pos="relative" bottom={40} align="center" direction="column">

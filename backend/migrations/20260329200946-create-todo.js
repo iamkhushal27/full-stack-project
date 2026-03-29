@@ -26,19 +26,16 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
       },
-      role: {
-        type: Sequelize.ENUM("extreme", "moderate", "low"),
-        allowNull: false,
-        defaultValue: "low",
-      },
       task_image: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      date: {                          // ✅ added
-        type: Sequelize.DATEONLY,          // stores YYYY-MM-DD, no time
-        allowNull: false,                   // optional — user may not set a due date
+      date: {
+        // ✅ added
+        type: Sequelize.DATEONLY, // stores YYYY-MM-DD, no time
+        allowNull: false, // optional — user may not set a due date
       },
+      
 
       user_id: {
         type: Sequelize.INTEGER,
@@ -50,15 +47,27 @@ module.exports = {
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },
+      category_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "categories",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      },
 
       created_at: {
-        allowNull: false,
         type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
       },
 
       updated_at: {
-        allowNull: false,
         type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
       },
     });
   },

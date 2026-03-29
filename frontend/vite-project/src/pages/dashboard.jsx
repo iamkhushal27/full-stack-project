@@ -17,7 +17,15 @@ function Dashboard() {
   ];
   return (
     <>
-      <Flex h="95%" bd="0.5 solid #A1A3AB" gap="lg">
+      <Flex
+        mt="xl"
+        h="94%"
+        justify="center"
+        align="center"
+        w="95%"
+        bd="1px solid #A1A3AB"
+        gap="lg"
+      >
         <Box
           h="95%"
           w="45%"

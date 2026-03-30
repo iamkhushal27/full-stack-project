@@ -24,6 +24,7 @@ function App() {
 
     { icon: IoIosNotifications, label: "Settings", href: "/settings" },
     { icon: IoIosNotifications, label: "My Account", href: "/myaccount" },
+    { icon: IoIosNotifications, label: "Categories", href: "/categories" },
   ];
   const items = data.map((item, index) => (
     <NavLink

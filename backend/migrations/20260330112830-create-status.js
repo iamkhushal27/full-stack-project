@@ -40,6 +40,11 @@ module.exports = {
         defaultValue: Sequelize.NOW,
       },
     });
+    await queryInterface.addConstraint("statuses", {
+      fields: ["name", "category_id"],
+      type: "unique",
+      name: "category_status_unique",
+    });
   },
 
   async down(queryInterface) {

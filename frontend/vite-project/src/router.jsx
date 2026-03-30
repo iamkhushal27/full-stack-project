@@ -5,6 +5,7 @@ import Registration from "./pages/registration";
 import Login from "./pages/login";
 import Settings from "./pages/settings";
 import MyAccount from "./pages/myaccount";
+import Category from "./pages/categories";
 
 const router = createBrowserRouter([
   {
@@ -16,26 +17,27 @@ const router = createBrowserRouter([
         Component: Dashboard,
       },
       {
-        path:"settings",
+        path: "settings",
         Component: Settings,
       },
       {
-        path:"myaccount",
+        path: "myaccount",
         Component: MyAccount,
+      },
+      {
+        path: "categories",
+        Component: Category,
       },
     ],
   },
   {
     path: "/registration",
     Component: Registration,
-    
   },
   {
     path: "/login",
     Component: Login,
-    
   },
-  
 ]);
 
 export default router;

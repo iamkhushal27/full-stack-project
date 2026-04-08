@@ -8,7 +8,7 @@ const {
   deleteCategoryController,
 } = require("../controllers/category_controller");
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router.post("/", Auth, createCategoryController);
 router.get("/", Auth, getAllCategoryController);

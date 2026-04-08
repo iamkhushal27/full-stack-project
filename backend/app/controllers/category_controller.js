@@ -10,13 +10,14 @@ const { BadRequestError } = require("../utils/error");
 module.exports = {
   createCategoryController: async function (req, res, next) {
     try {
+      const user = req.user;
       const { name } = req.body;
 
       if (!name) {
         throw new BadRequestError("Category name is required");
       }
 
-      const category = await createCategory({ name });
+      const category = await createCategory({ name, user_id: user.id });
 
       res.status(201).json({
         status: "success",
@@ -30,7 +31,8 @@ module.exports = {
 
   getAllCategoryController: async function (req, res, next) {
     try {
-      const categories = await getAllCategories();
+      const user = req.user;
+      const categories = await getAllCategories(user.id);
 
       res.status(200).json({
         status: "success",
@@ -44,8 +46,9 @@ module.exports = {
 
   getSingleCategoryController: async function (req, res, next) {
     try {
+      const user = req.user;
       const { id } = req.params;
-      const category = await getSingleCategory(id);
+      const category = await getSingleCategory(id, user.id);
 
       res.status(200).json({
         status: "success",
@@ -59,6 +62,7 @@ module.exports = {
 
   updateCategoryController: async function (req, res, next) {
     try {
+      const user = req.user;
       const { id } = req.params;
       const data = req.body;
 
@@ -66,7 +70,7 @@ module.exports = {
         throw new BadRequestError("Update data is required");
       }
 
-      const category = await updateCategory(id, data);
+      const category = await updateCategory(id, user.id, data);
 
       res.status(200).json({
         status: "success",
@@ -80,8 +84,9 @@ module.exports = {
 
   deleteCategoryController: async function (req, res, next) {
     try {
+      const user = req.user;
       const { id } = req.params;
-      await deleteCategory(id);
+      await deleteCategory(id, user.id);
 
       res.status(200).json({
         status: "success",

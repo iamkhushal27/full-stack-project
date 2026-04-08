@@ -23,6 +23,9 @@ import { getUserData, userUpdate } from "../service/user.service";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useFileUpload } from "../service/file.service";
+import { useDisclosure } from "@mantine/hooks";
+import AddCategoryModal from "../components/addCategoryModal";
+import { Link } from "react-router-dom";
 
 function Category() {
   const [imageFile, setImageFile] = useState("");
@@ -31,6 +34,8 @@ function Category() {
   const { mutate: uploadFile } = useFileUpload();
   const { mutate } = userUpdate();
   const queryClient = useQueryClient();
+  const [opened, { open, close }] = useDisclosure(false);
+
   const heading = [
     "circket",
     "work",
@@ -89,7 +94,12 @@ function Category() {
             overflowY: "auto",
           }}
         >
-          <Flex m="lg">
+          <Flex m="lg" direction="column" gap="sm">
+            <Flex justify="end">
+              <Button w="15%" bg="#F24E1E" radius="6" onClick={open}>
+                Add Category
+              </Button>
+            </Flex>
             <Grid>
               {heading.map((data) => {
                 return (
@@ -101,17 +111,23 @@ function Category() {
                         </Flex>
                       </Card.Section>
 
-                      <Button bg="#F24E1E" radius="6">
+                      <Button
+                        bg="#F24E1E"
+                        radius="6"
+                        component={Link}
+                        to="/categories/create"
+                      >
                         Explore about {data} category
                       </Button>
                     </Card>{" "}
                   </Grid.Col>
                 );
               })}
-            </Grid>{" "}
+            </Grid>
           </Flex>
         </Box>
       </Box>
+      <AddCategoryModal opened={opened} open={open} close={close} />
     </>
   );
 }

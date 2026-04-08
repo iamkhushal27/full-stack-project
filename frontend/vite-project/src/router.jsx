@@ -6,6 +6,7 @@ import Login from "./pages/login";
 import Settings from "./pages/settings";
 import MyAccount from "./pages/myaccount";
 import Category from "./pages/categories";
+import SingleCategory from "./pages/singleCategory";
 
 const router = createBrowserRouter([
   {
@@ -26,7 +27,16 @@ const router = createBrowserRouter([
       },
       {
         path: "categories",
-        Component: Category,
+        children: [
+          {
+            index: true,
+            Component: Category, // /categories
+          },
+          {
+            path: ":id",
+            Component: SingleCategory, // or CategoryDetail
+          },
+        ],
       },
     ],
   },

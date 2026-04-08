@@ -1,0 +1,39 @@
+"use strict";
+module.exports = (sequelize, DataTypes) => {
+  const Priority = sequelize.define(
+    "Priority",
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false,
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      category_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+    },
+    {
+      tableName: "priorities",
+      timestamps: true,
+      underscored: true,
+    }
+  );
+
+  // 🔗 Associations
+  Priority.associate = (models) => {
+    Priority.belongsTo(models.Category, {
+      foreignKey: "category_id",
+      as: "category",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+    });
+  };
+
+  return Priority;
+};

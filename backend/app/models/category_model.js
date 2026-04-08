@@ -30,6 +30,18 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "CASCADE",
       onUpdate: "CASCADE",
     });
+    Category.hasMany(models.Status, {
+      foreignKey: "category_id",
+      as: "statuses",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+    });
+    Category.hasMany(models.Priority, {
+      foreignKey: "category_id",
+      as: "priorities",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+    });
   };
 
   return Category;

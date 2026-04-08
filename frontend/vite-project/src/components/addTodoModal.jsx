@@ -303,7 +303,6 @@ function AddTodoModal({ opened, close, open }) {
                     )}
                   </Box>
                 </Flex>
-                <FileInput></FileInput>
               </Stack>
             </Box>
             <Group justify="start" ml="sm" mt="md">

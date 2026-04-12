@@ -27,9 +27,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useFileUpload } from "../service/file.service";
 import { useDisclosure } from "@mantine/hooks";
-import AddCategoryModal from "../components/addCategoryModal";
+import AddModal from "../components/Addmodal";
 import { Link } from "react-router-dom";
 import MyTable from "../components/table";
+import { ActionIcon } from "@mantine/core";
 
 function SingleCategory() {
   const [imageFile, setImageFile] = useState("");
@@ -38,35 +39,55 @@ function SingleCategory() {
   const { mutate: uploadFile } = useFileUpload();
   const { mutate } = userUpdate();
   const queryClient = useQueryClient();
-  const [opened, { open, close }] = useDisclosure(false);
+  const [statusOpened, { open: statusOpen, close: statusClose }] = useDisclosure(false);
+  const [priorityOpened, { open: priorityOpen, close: priorityClose }] = useDisclosure(false);
 
-  const heading = [
-    "circket",
-    "work",
-    "football",
-    "show",
-    "circket",
-    "work",
-    "football",
-    "show",
-    "circket",
-    "work",
-    "football",
-    "show",
-    "circket",
-    "work",
-    "football",
-    "show",
-    "circket",
-    "work",
-    "football",
-    "show",
-    "circket",
-    "work",
-    "football",
-    "show",
+  const statusForm = useForm({
+    initialValues: {
+      status: "",
+    },
+  });
+  const priorityForm = useForm({
+    initialValues: {
+      priority: "",
+    },
+  });
+
+  const users = [
+    { id: 1, email: "ali@x.com", role: "admin", username: "ali" },
+    { id: 2, username: "sara", email: "sara@x.com", role: "user" },
+    { id: 2, username: "sara", email: "sara@x.com", role: "user" },
+    { id: 2, username: "sara", email: "sara@x.com", role: "user" },
+    { id: 2, username: "sara", email: "sara@x.com", role: "user" },
   ];
-
+  const columns = [
+    { key: "username", label: "Username", width: "55%" },
+    {
+      key: "actions",
+      label: "Actions",
+      width: "40%", // 👈 just add this one line
+      render: (row) => (
+        <Group justify="center" gap="xl">
+          <Button
+            w="22%"
+            onClick={() => console.log("Edit", row)}
+            bg="#F24E1E"
+            radius="6"
+          >
+            Edit
+          </Button>
+          <Button
+            onClick={() => console.log("Delete", row)}
+            bg="#F24E1E"
+            radius="6"
+            w="22%"
+          >
+            Delete
+          </Button>
+        </Group>
+      ),
+    },
+  ];
   const { data, refetch } = useQuery({
     queryKey: ["todos"],
     queryFn: getUserData,
@@ -120,7 +141,7 @@ function SingleCategory() {
                     bg="transparent"
                     c="#A1A3AB"
                     p={0}
-                    onClick={open}
+                    onClick={statusOpen}
                     leftSection={
                       <FaPlus
                         style={{
@@ -134,7 +155,7 @@ function SingleCategory() {
                   </Button>
                 </Flex>
 
-                <MyTable h="80%" />
+                <MyTable data={users} columns={columns} h={300} />
               </Flex>
             </Box>
             <Divider my="sm" />
@@ -149,7 +170,7 @@ function SingleCategory() {
                     bg="transparent"
                     c="#A1A3AB"
                     p={0}
-                    onClick={open}
+                    onClick={priorityOpen}
                     leftSection={
                       <FaPlus
                         style={{
@@ -162,13 +183,28 @@ function SingleCategory() {
                     Add Task Priority
                   </Button>
                 </Flex>
-                <MyTable h="80%" />
+                <MyTable data={users} columns={columns} h={300}  />
               </Flex>
             </Box>
           </Box>
         </Box>
       </Box>
-      <AddCategoryModal opened={opened} open={open} close={close} />
+      <AddModal
+        opened={statusOpened}
+        open={statusOpen}
+        close={statusClose}
+        inputLabel={"Status"}
+        form={statusForm}
+        inputName={"status"}
+      />
+      <AddModal
+        opened={priorityOpened}
+        open={priorityOpen}
+        close={priorityClose}
+        inputLabel={"Priority"}
+        form={priorityForm}
+        inputName={"priority"}
+      />
     </>
   );
 }

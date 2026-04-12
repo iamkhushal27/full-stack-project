@@ -15,12 +15,17 @@ export function userRegister(userData) {
   });
   return mutation;
 }
-export function getUserData(params) {
-  const data = axios.get("http://localhost:3000/api/users/", {
-    withCredentials: true,
-  });
-
-  return data;
+export async function getUserData() {
+  try {
+    const response = await axios.get("http://localhost:3000/api/users/", {
+      withCredentials: true,
+    });
+    return response.data; // ✅ return just the data
+  } catch (error) {
+    const message =
+      error.response?.data?.message || error.message || "Something went wrong";
+    throw new Error(message);
+  }
 }
 
 export function userUpdate(userData) {

@@ -1,10 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export function userLogin(userData) {
+  const navigate = useNavigate();
+
   const mutation = useMutation({
-    onSuccess: (data) => {
-      console.log(data);
+    onSuccess: () => {
+      navigate("/");
     },
     onError: (error) => {
       console.log(error);

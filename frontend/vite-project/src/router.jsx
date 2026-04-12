@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "./App";
 import Dashboard from "./pages/dashboard";
 import Registration from "./pages/registration";
@@ -7,47 +7,32 @@ import Settings from "./pages/settings";
 import MyAccount from "./pages/myaccount";
 import Category from "./pages/categories";
 import SingleCategory from "./pages/singleCategory";
+import AuthRoute from "./components/protectedRoute";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    Component: App,
+    element: (
+      <AuthRoute>
+        <App />
+      </AuthRoute>
+    ), // ✅ element not Component
     children: [
-      {
-        index: true,
-        Component: Dashboard,
-      },
-      {
-        path: "settings",
-        Component: Settings,
-      },
-      {
-        path: "myaccount",
-        Component: MyAccount,
-      },
+      { index: true, Component: Dashboard },
+      { path: "settings", Component: Settings },
+      { path: "myaccount", Component: MyAccount },
       {
         path: "categories",
         children: [
-          {
-            index: true,
-            Component: Category, // /categories
-          },
-          {
-            path: ":id",
-            Component: SingleCategory, // or CategoryDetail
-          },
+          { index: true, Component: Category },
+          { path: ":id", Component: SingleCategory },
         ],
       },
     ],
   },
-  {
-    path: "/registration",
-    Component: Registration,
-  },
-  {
-    path: "/login",
-    Component: Login,
-  },
+  { path: "/login", Component: Login }, // ✅ public
+  { path: "/registration", Component: Registration }, // ✅ public
+  { path: "*", element: <Navigate to="/login" replace /> },
 ]);
 
 export default router;

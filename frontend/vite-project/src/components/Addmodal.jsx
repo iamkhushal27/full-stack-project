@@ -8,14 +8,16 @@ import {
   Text,
   Box,
 } from "@mantine/core";
-import { useForm } from "@mantine/form";
 
-function AddCategoryModal({ opened, open, close }) {
-  const form = useForm({
-    initialValues: {
-      name: "",
-    },
-  });
+function AddModal({
+  opened,
+  open,
+  close,
+  title,
+  inputName,
+  inputLabel,
+  form,
+}) {
   return (
     <>
       <Modal
@@ -33,11 +35,13 @@ function AddCategoryModal({ opened, open, close }) {
       >
         <Flex direction="column" h="100%" w="100%" justify="space-between">
           <Flex justify="space-between" align="center">
-            <Title order={2}>Task Categories</Title>
+            <Title order={2}>{title}</Title>
             <Text
               td="underline"
               style={{ cursor: "pointer" }}
-              onClick={() => {}}
+              onClick={() => {
+                close();
+              }}
               fw="inherit"
             >
               Go back
@@ -53,9 +57,9 @@ function AddCategoryModal({ opened, open, close }) {
             >
               <Flex gap="lg" direction="column">
                 <TextInput
-                  label="Name"
+                  label={inputLabel}
                   w="80%"
-                  {...form.getInputProps("name")}
+                  {...form.getInputProps(inputName)}
                   styles={{
                     input: {
                       border: "1px solid #A1A3AB",
@@ -90,4 +94,4 @@ function AddCategoryModal({ opened, open, close }) {
     </>
   );
 }
-export default AddCategoryModal;
+export default AddModal;

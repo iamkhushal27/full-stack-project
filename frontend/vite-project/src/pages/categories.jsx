@@ -24,7 +24,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useFileUpload } from "../service/file.service";
 import { useDisclosure } from "@mantine/hooks";
-import AddCategoryModal from "../components/addCategoryModal";
+import AddModal from "../components/Addmodal";
 import { Link } from "react-router-dom";
 
 function Category() {
@@ -35,6 +35,11 @@ function Category() {
   const { mutate } = userUpdate();
   const queryClient = useQueryClient();
   const [opened, { open, close }] = useDisclosure(false);
+  const categoryForm = useForm({
+    initialValues: {
+      name: "",
+    },
+  });
 
   const heading = [
     "circket",
@@ -127,7 +132,14 @@ function Category() {
           </Flex>
         </Box>
       </Box>
-      <AddCategoryModal opened={opened} open={open} close={close} />
+      <AddModal
+        opened={opened}
+        open={open}
+        close={close}
+        inputLabel={"Name"}
+        form={categoryForm}
+        inputName={"name"}
+      />
     </>
   );
 }

@@ -27,7 +27,9 @@ import { useDisclosure } from "@mantine/hooks";
 import AddModal from "../components/Addmodal";
 import { Link } from "react-router-dom";
 
+
 function Category() {
+  
   const [imageFile, setImageFile] = useState("");
   const [preview, setPreview] = useState("");
   const [img, setImg] = useState("");
@@ -85,6 +87,7 @@ function Category() {
     },
   });
 
+
   return (
     <>
       <Box h="95%" w="95%" ml="xl" gap="lg">
@@ -132,6 +135,7 @@ function Category() {
           </Flex>
         </Box>
       </Box>
+      
       <AddModal
         opened={opened}
         open={open}

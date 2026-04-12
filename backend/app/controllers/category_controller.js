@@ -10,18 +10,11 @@ const { BadRequestError } = require("../utils/error");
 module.exports = {
   createCategoryController: async function (req, res, next) {
     try {
-      const user = req.user;
-      const userId = Number(req.params.userId);
+      const userId = req.user.id;
       const { name } = req.body;
 
       if (!name) {
         throw new BadRequestError("Category name is required");
-      }
-      if (!userId || Number.isNaN(userId)) {
-        throw new BadRequestError("Valid user id is required in params");
-      }
-      if (user.id !== userId) {
-        throw new BadRequestError("Invalid user id for this request");
       }
 
       const category = await createCategory({ name, user_id: userId });
@@ -38,14 +31,7 @@ module.exports = {
 
   getAllCategoryController: async function (req, res, next) {
     try {
-      const user = req.user;
-      const userId = Number(req.params.userId);
-      if (!userId || Number.isNaN(userId)) {
-        throw new BadRequestError("Valid user id is required in params");
-      }
-      if (user.id !== userId) {
-        throw new BadRequestError("Invalid user id for this request");
-      }
+      const userId = req.user.id;
       const categories = await getAllCategories(userId);
 
       res.status(200).json({
@@ -60,15 +46,8 @@ module.exports = {
 
   getSingleCategoryController: async function (req, res, next) {
     try {
-      const user = req.user;
-      const userId = Number(req.params.userId);
+      const userId = req.user.id;
       const { id } = req.params;
-      if (!userId || Number.isNaN(userId)) {
-        throw new BadRequestError("Valid user id is required in params");
-      }
-      if (user.id !== userId) {
-        throw new BadRequestError("Invalid user id for this request");
-      }
       const category = await getSingleCategory(id, userId);
 
       res.status(200).json({
@@ -83,19 +62,12 @@ module.exports = {
 
   updateCategoryController: async function (req, res, next) {
     try {
-      const user = req.user;
-      const userId = Number(req.params.userId);
+      const userId = req.user.id;
       const { id } = req.params;
       const data = req.body;
 
       if (!Object.keys(data).length) {
         throw new BadRequestError("Update data is required");
-      }
-      if (!userId || Number.isNaN(userId)) {
-        throw new BadRequestError("Valid user id is required in params");
-      }
-      if (user.id !== userId) {
-        throw new BadRequestError("Invalid user id for this request");
       }
 
       const category = await updateCategory(id, userId, data);
@@ -112,15 +84,8 @@ module.exports = {
 
   deleteCategoryController: async function (req, res, next) {
     try {
-      const user = req.user;
-      const userId = Number(req.params.userId);
+      const userId = req.user.id;
       const { id } = req.params;
-      if (!userId || Number.isNaN(userId)) {
-        throw new BadRequestError("Valid user id is required in params");
-      }
-      if (user.id !== userId) {
-        throw new BadRequestError("Invalid user id for this request");
-      }
       await deleteCategory(id, userId);
 
       res.status(200).json({

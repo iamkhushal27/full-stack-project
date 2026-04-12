@@ -15,6 +15,6 @@ router.post("/register", userRegister);
 router.post("/login", userLogin);
 router.get("/", Auth, userSingle);
 router.patch("/", Auth, userUpdate);
-router.use("/:userId/category", categoryRouter);
+router.use("/category", categoryRouter);
 
 module.exports = router;

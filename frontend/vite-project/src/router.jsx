@@ -8,6 +8,7 @@ import MyAccount from "./pages/myaccount";
 import Category from "./pages/categories";
 import SingleCategory from "./pages/singleCategory";
 import AuthRoute from "./components/protectedRoute";
+import StoreMy from "./pages/store";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,7 @@ const router = createBrowserRouter([
       { index: true, Component: Dashboard },
       { path: "settings", Component: Settings },
       { path: "myaccount", Component: MyAccount },
+      { path: "Store", Component: StoreMy },
       {
         path: "categories",
         children: [

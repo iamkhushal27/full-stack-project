@@ -9,10 +9,9 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         allowNull: false,
       },
-      name: {
+      status_name: {
         type: DataTypes.STRING,
         allowNull: false,
-        
       },
       category_id: {
         type: DataTypes.INTEGER,

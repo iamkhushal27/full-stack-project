@@ -9,7 +9,7 @@ import {
   Box,
 } from "@mantine/core";
 
-function AddModal({
+function FormModal({
   opened,
   open,
   close,
@@ -17,6 +17,8 @@ function AddModal({
   inputName,
   inputLabel,
   form,
+  mutateFunction,
+  selectedCategory,
 }) {
   return (
     <>
@@ -27,7 +29,6 @@ function AddModal({
         styles={{
           body: {
             height: "80vh", // 👈 set height here
-
             padding: "80px",
           },
         }}
@@ -40,6 +41,7 @@ function AddModal({
               td="underline"
               style={{ cursor: "pointer" }}
               onClick={() => {
+                form.reset();
                 close();
               }}
               fw="inherit"
@@ -50,9 +52,33 @@ function AddModal({
           <Box h="90%" w="100%" bdrs="md" p="md" bd="1px solid #A1A3AB">
             <form
               onSubmit={form.onSubmit((values) => {
-                console.log(values);
-                close();
-                form.reset();
+                let payload;
+
+                if (!selectedCategory) {
+                  // ✅ Pure create
+                  payload = values;
+                } else if (!selectedCategory.id && selectedCategory.parentId) {
+                  payload = {
+                    parentId: selectedCategory.parentId,
+                    ...values,
+                  };
+                } else {
+                  payload = {
+                    id: selectedCategory.id,
+                    ...(selectedCategory.parentId && {
+                      parentId: selectedCategory.parentId,
+                    }),
+                    ...values,
+                  };
+                }
+                console.log(payload);
+                mutateFunction(payload, {
+                  onSuccess: (response) => {
+                    console.log(response);
+                    close();
+                    form.reset();
+                  },
+                });
               })}
             >
               <Flex gap="lg" direction="column">
@@ -72,7 +98,8 @@ function AddModal({
                 />
                 <Flex gap="sm">
                   <Button bg="#F24E1E" radius="6" w="25%" type="submit">
-                    Create
+                    {selectedCategory?.id ? "Update" : "Create"}{" "}
+                    {/* ✅ dynamic label */}
                   </Button>
                   <Button
                     bg="#F24E1E"
@@ -94,4 +121,4 @@ function AddModal({
     </>
   );
 }
-export default AddModal;
+export default FormModal;

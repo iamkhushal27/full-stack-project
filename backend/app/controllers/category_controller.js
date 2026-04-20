@@ -4,8 +4,9 @@ const {
   getSingleCategory,
   updateCategory,
   deleteCategory,
+  getCategoryByName,
 } = require("../services/category_service");
-const { BadRequestError } = require("../utils/error");
+const { BadRequestError, ConflictError } = require("../utils/error");
 
 module.exports = {
   createCategoryController: async function (req, res, next) {
@@ -17,6 +18,13 @@ module.exports = {
         throw new BadRequestError("Category name is required");
       }
 
+      const existingCategoryByName = await getCategoryByName({
+        name,
+        user_id: userId,
+      });
+      if (existingCategoryByName) {
+        throw new ConflictError("Category Name alredy exists");
+      }
       const category = await createCategory({ name, user_id: userId });
 
       res.status(201).json({
@@ -65,11 +73,18 @@ module.exports = {
       const userId = req.user.id;
       const { id } = req.params;
       const data = req.body;
+      console.log(id, data);
 
       if (!Object.keys(data).length) {
         throw new BadRequestError("Update data is required");
       }
-
+      const existingCategoryByName = await getCategoryByName({
+        name: data.name,
+        user_id: userId,
+      });
+      if (existingCategoryByName) {
+        throw new ConflictError("Category Name alredy exists");
+      }
       const category = await updateCategory(id, userId, data);
 
       res.status(200).json({

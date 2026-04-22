@@ -34,6 +34,12 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "CASCADE",
       onUpdate: "CASCADE",
     });
+    Status.hasMany(models.Todo, {
+      foreignKey: "status_id",
+      as: "todos",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+    });
   };
 
   return Status;

@@ -33,6 +33,12 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "CASCADE",
       onUpdate: "CASCADE",
     });
+    Priority.hasMany(models.Todo, {
+      foreignKey: "priority_id",
+      as: "todos",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+    });
   };
 
   return Priority;

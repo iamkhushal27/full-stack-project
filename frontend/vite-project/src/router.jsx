@@ -3,7 +3,7 @@ import App from "./App";
 import Dashboard from "./pages/dashboard";
 import Registration from "./pages/registration";
 import Login from "./pages/login";
-import Settings from "./pages/settings";
+import Settings from "./pages/myTodos";
 import MyAccount from "./pages/myaccount";
 import Category from "./pages/categories";
 import SingleCategory from "./pages/singleCategory";

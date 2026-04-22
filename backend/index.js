@@ -4,7 +4,6 @@ import cookieParser from "cookie-parser";
 import errorHandler from "./app/middleware/error.middleware.js";
 import userRouter from "./app/routes/user_routes.js";
 import fileUplaodRouter from "./app/routes/file_routes.js";
-import todoRouter from "./app/routes/todo_routes.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -23,7 +22,6 @@ app.use(cookieParser());
 app.use(errorHandler);
 app.use("/api/users", userRouter);
 app.use("/api/fileuploading", fileUplaodRouter);
-app.use("/api/todo", todoRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

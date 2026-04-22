@@ -4,14 +4,25 @@ import { HiDotsHorizontal } from "react-icons/hi";
 import TodoChip from "../components/todochip";
 import { DonutChart } from "@mantine/charts";
 import TodoShow from "../components/todoShow";
+import { useFilter } from "../store/filter";
+import { useQuery } from "@tanstack/react-query";
+import { getTodos } from "../service/todo.service";
+import { useEffect, useState } from "react";
 
 function Settings() {
-  const data = [
-    { name: "USA", value: 400, color: "indigo.6" },
-    { name: "India", value: 300, color: "yellow.6" },
-    { name: "Japan", value: 100, color: "teal.6" },
-    { name: "Other", value: 200, color: "gray.6" },
-  ];
+  const selectedDate = useFilter((state) => state.selectedDate);
+  if (selectedDate) {
+  }
+  const [data, setData] = useState(null);
+
+  const { data: todoData } = useQuery({
+    queryKey: ["todos", selectedDate ?? "all"],
+    queryFn: () => getTodos(selectedDate),
+  });
+  useEffect(() => {
+    setData(null);
+  }, [selectedDate]);
+
   return (
     <>
       <Flex h="95%" ml="xl" gap="lg">
@@ -31,11 +42,9 @@ function Settings() {
             py="lg"
             style={{ overflowY: "auto" }}
           >
-            <TodoChip />
-            <TodoChip />
-            <TodoChip />
-            <TodoChip />
-            <TodoChip />
+            {todoData?.data?.map((data) => {
+              return <TodoChip setData={setData} data={data} />;
+            })}
           </Flex>
         </Box>
         <Box
@@ -54,7 +63,7 @@ function Settings() {
             py="lg"
             style={{ overflowY: "auto" }}
           >
-            <TodoShow />
+            <TodoShow setData={setData} data={data} />
           </Flex>
         </Box>
       </Flex>

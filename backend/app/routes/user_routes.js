@@ -8,6 +8,7 @@ const {
 } = require("../controllers/user_controller");
 const { Auth } = require("../middleware/auth.middleware");
 const categoryRouter = require("./category_routes");
+const todoRouter = require("./todo_routes");
 
 const router = express.Router();
 
@@ -16,5 +17,6 @@ router.post("/login", userLogin);
 router.get("/", Auth, userSingle);
 router.patch("/", Auth, userUpdate);
 router.use("/category", categoryRouter);
+router.use("/todos", todoRouter);
 
 module.exports = router;

@@ -9,6 +9,7 @@ import {
   Textarea,
   Flex,
   FileInput,
+  Select,
 } from "@mantine/core";
 import { Radio, Group } from "@mantine/core";
 import img from "../assets/Group 53.png";
@@ -17,18 +18,44 @@ import { DateInput } from "@mantine/dates";
 import { useState } from "react";
 import { todoCreate } from "../service/todo.service";
 import { useFileUpload } from "../service/file.service";
+import { useQuery } from "@tanstack/react-query";
+
+import { useAuth } from "../store/auth";
+import { getCategories } from "../service/category.service";
+import { getStatuses } from "../service/status.service";
+import { getPriorities } from "../service/priority.service";
 
 function AddTodoModal({ opened, close, open }) {
+  const user = useAuth((state) => state.user);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+
   const { mutate } = todoCreate();
   const [preview, setPreview] = useState(null);
   const { mutate: fileUpload } = useFileUpload();
+  const { data, refetch, isLoading } = useQuery({
+    queryKey: ["categories"], // include id in key
+    queryFn: getCategories, // pass id to function
+  });
+
+  const { data: priorityData } = useQuery({
+    queryKey: ["priorities", selectedCategoryId],
+    queryFn: () => getPriorities(selectedCategoryId),
+    enabled: !!selectedCategoryId, // only runs when category is selected
+  });
+
+  const { data: statusData } = useQuery({
+    queryKey: ["statuses", selectedCategoryId], // ✅ id in key
+    queryFn: () => getStatuses(selectedCategoryId), // ✅ id in function
+    enabled: !!selectedCategoryId, // ✅ only runs when id exists
+  });
 
   const form = useForm({
-    mode: "uncontrolled",
     initialValues: {
       title: "",
       date: new Date(),
-      priority: "low",
+      category: null,
+      priority: null,
+      status: null,
       description: "",
       uploadImage: null,
     },
@@ -37,7 +64,6 @@ function AddTodoModal({ opened, close, open }) {
       date: isNotEmpty("Date is required"),
       priority: isNotEmpty("Priority is required"),
       description: isNotEmpty("Description is required"),
-      uploadImage: isNotEmpty("Image is required"),
     },
   });
   return (
@@ -52,16 +78,19 @@ function AddTodoModal({ opened, close, open }) {
       >
         <form
           onSubmit={form.onSubmit((values) => {
-            console.log("inside");
+            console.log(values);
             if (preview) {
               const formData = new FormData();
               formData.append("profile_image", values.uploadImage);
               fileUpload(formData, {
                 onSuccess: (data) => {
+                  console.log(data);
                   mutate({
                     title: values.title,
                     date: values.date,
+                    category: values.category,
                     priority: values.priority,
+                    status: values.status,
                     description: values.description,
                     uploadImage: data.data.url, // ✅ cloudinary URL
                   });
@@ -136,82 +165,51 @@ function AddTodoModal({ opened, close, open }) {
                   }}
                 />
                 <Text>Priority</Text>
-                <Radio.Group {...form.getInputProps("priority")}>
-                  <Group>
-                    <Radio
-                      radius="sm"
-                      size="xs"
-                      value="Extreme"
-                      labelPosition="left"
-                      color="red"
-                      label={
-                        <Flex align="center" gap={6}>
-                          <Box
-                            style={{
-                              width: 10,
-                              height: 10,
-                              borderRadius: "50%",
-                              backgroundColor: "red", // ✅ red dot
-                            }}
-                          />
-                          <Text size="xs">Extreme</Text>
-                        </Flex>
-                      }
-                      styles={{
-                        radio: { cursor: "pointer" },
-                        label: { cursor: "pointer", paddingLeft: 0 },
-                      }}
-                    />
-                    <Radio
-                      radius="sm"
-                      size="xs"
-                      value="Moderate"
-                      labelPosition="left"
-                      color="#3ABEFF"
-                      label={
-                        <Flex align="center" gap={6}>
-                          <Box
-                            style={{
-                              width: 10,
-                              height: 10,
-                              borderRadius: "50%",
-                              backgroundColor: "#3ABEFF", // ✅ blue dot
-                            }}
-                          />
-                          <Text size="xs">Moderate</Text>
-                        </Flex>
-                      }
-                      styles={{
-                        radio: { cursor: "pointer" },
-                        label: { cursor: "pointer", paddingLeft: 0 },
-                      }}
-                    />
-                    <Radio
-                      radius="sm"
-                      size="xs"
-                      value="low"
-                      labelPosition="left"
-                      color="#05A301"
-                      label={
-                        <Flex align="center" gap={6}>
-                          <Box
-                            style={{
-                              width: 10,
-                              height: 10,
-                              borderRadius: "50%",
-                              backgroundColor: "#05A301", // ✅ green dot
-                            }}
-                          />
-                          <Text size="xs">Low</Text>
-                        </Flex>
-                      }
-                      styles={{
-                        radio: { cursor: "pointer" },
-                        label: { cursor: "pointer", paddingLeft: 0 },
-                      }}
-                    />
-                  </Group>
-                </Radio.Group>
+                <Select
+                  label="Category"
+                  placeholder={isLoading ? "Loading..." : "Pick category"}
+                  disabled={isLoading}
+                  {...form.getInputProps("category")}
+                  data={
+                    data?.data.map((category) => ({
+                      value: String(category.id), // ✅ convert number to string
+                      label: category.name,
+                    })) || []
+                  }
+                  onChange={(value) => {
+                    setSelectedCategoryId(value); // ✅ triggers priority/status fetch
+                    form.setFieldValue("category", value); // ✅ saves to form
+                  }}
+                />
+                {selectedCategoryId ? (
+                  <Select
+                    label="priority"
+                    placeholder={isLoading ? "Loading..." : "Pick Priority"}
+                    disabled={isLoading}
+                    {...form.getInputProps("priority")}
+                    data={
+                      priorityData?.data?.map((priority) => ({
+                        value: String(priority.id), // ✅ convert number to string
+                        label: priority.priority_name,
+                      })) || []
+                    }
+                  />
+                ) : null}
+
+                {selectedCategoryId ? (
+                  <Select
+                    label="Status"
+                    placeholder={isLoading ? "Loading..." : "Pick Status"}
+                    disabled={isLoading}
+                    {...form.getInputProps("status")}
+                    data={
+                      statusData?.data?.map((status) => ({
+                        value: String(status.id), // ✅ convert number to string
+                        label: status.status_name,
+                      })) || []
+                    }
+                  />
+                ) : null}
 
                 <Text>Task descriobtion</Text>
                 <Flex w="100%" style={{ flex: 1 }} gap="md" align="stretch">

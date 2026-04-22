@@ -1,9 +1,9 @@
 import { Box, ThemeIcon } from "@mantine/core";
 
-function IconBox({ backgroundColor, MyIcon, size }) {
+function IconBox({ backgroundColor, MyIcon, size, myFunction = () => {} }) {
   const Icon = MyIcon; // ✅ reassign to guarantee capital letter
   return (
-    <ThemeIcon bdrs="md" size={size} bg={backgroundColor}>
+    <ThemeIcon bdrs="md" onClick={myFunction} size={size} bg={backgroundColor}>
       <Icon style={{ width: "70%", height: "70%" }} />
     </ThemeIcon>
   );

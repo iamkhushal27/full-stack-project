@@ -38,6 +38,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      priority_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      status_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
     },
     {
       tableName: "todos",
@@ -57,6 +65,18 @@ module.exports = (sequelize, DataTypes) => {
     Todo.belongsTo(models.Category, {
       foreignKey: "category_id",
       as: "category",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+    });
+    Todo.belongsTo(models.Priority, {
+      foreignKey: "priority_id",
+      as: "priority",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+    });
+    Todo.belongsTo(models.Status, {
+      foreignKey: "status_id",
+      as: "status",
       onDelete: "CASCADE",
       onUpdate: "CASCADE",
     });

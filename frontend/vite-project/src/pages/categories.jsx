@@ -16,6 +16,7 @@ import {
   Card,
   Image,
   Grid,
+  Menu,
 } from "@mantine/core";
 import { HiDotsHorizontal } from "react-icons/hi";
 import { useForm } from "@mantine/form";
@@ -24,61 +25,40 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useFileUpload } from "../service/file.service";
 import { useDisclosure } from "@mantine/hooks";
-import AddCategoryModal from "../components/addCategoryModal";
+import FormModal from "../components/addModal";
 import { Link } from "react-router-dom";
+import {
+  categoryCreate,
+  deleteCategory,
+  EditCategroy,
+  getCategories,
+} from "../service/category.service";
+import DeleteModal from "../components/deleteModal";
 
 function Category() {
-  const [imageFile, setImageFile] = useState("");
-  const [preview, setPreview] = useState("");
-  const [img, setImg] = useState("");
-  const { mutate: uploadFile } = useFileUpload();
-  const { mutate } = userUpdate();
-  const queryClient = useQueryClient();
+  
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [opened, { open, close }] = useDisclosure(false);
+  const [
+    deleteModalOpened,
+    { open: deleteModalOpen, close: deleteModalClose },
+  ] = useDisclosure(false);
+  const { mutate: categoryMutate } = categoryCreate();
+  const { mutate: editCategoryMutate } = EditCategroy();
+  const { mutate: deleteCategoryMutate } = deleteCategory();
 
-  const heading = [
-    "circket",
-    "work",
-    "football",
-    "show",
-    "circket",
-    "work",
-    "football",
-    "show",
-    "circket",
-    "work",
-    "football",
-    "show",
-    "circket",
-    "work",
-    "football",
-    "show",
-    "circket",
-    "work",
-    "football",
-    "show",
-    "circket",
-    "work",
-    "football",
-    "show",
-  ];
-
-  const { data, refetch } = useQuery({
-    queryKey: ["todos"],
-    queryFn: getUserData,
-  });
-
-  const form = useForm({
-    mode: "uncontrolled",
+  const categoryForm = useForm({
     initialValues: {
       name: "",
-      email: "",
-      profile_image: "",
-    },
-    validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
     },
   });
+
+  const { data: categoryData } = useQuery({
+    queryKey: ["categories"],
+    queryFn: getCategories,
+    staleTime: 1000 * 60 * 5, // ✅ cache for 5 minutes, no refetch on re-render
+  });
+
 
   return (
     <>
@@ -96,18 +76,57 @@ function Category() {
         >
           <Flex m="lg" direction="column" gap="sm">
             <Flex justify="end">
-              <Button w="15%" bg="#F24E1E" radius="6" onClick={open}>
+              <Button
+                w="15%"
+                bg="#F24E1E"
+                radius="6"
+                onClick={() => {
+                  setSelectedCategory(null);
+                  categoryForm.reset();
+                  open();
+                }}
+              >
                 Add Category
               </Button>
             </Flex>
             <Grid>
-              {heading.map((data) => {
+              {categoryData?.data?.map((data) => {
                 return (
                   <Grid.Col span={4}>
-                    <Card shadow="lg" padding="xl">
+                    <Card shadow="lg" padding="lg">
+                      <Flex justify="end">
+                        {" "}
+                        <Menu>
+                          <Menu.Target>
+                            <HiDotsHorizontal />
+                          </Menu.Target>
+
+                          <Menu.Dropdown>
+                            <Menu.Item
+                              onClick={() => {
+                                console.log(data)
+                                setSelectedCategory(data);
+                                categoryForm.setValues({ name: data.name }); // ✅ pre-fills the form
+                                open(); // ✅ opens the modal
+                              }}
+                            >
+                              Edit
+                            </Menu.Item>
+                            <Menu.Item
+                              color="red"
+                              onClick={() => {
+                                setSelectedCategory(data);
+                                deleteModalOpen(); // ✅ opens the modal
+                              }}
+                            >
+                              Delete
+                            </Menu.Item>
+                          </Menu.Dropdown>
+                        </Menu>
+                      </Flex>
                       <Card.Section p="lg">
                         <Flex justify="center">
-                          <Title>{data}</Title>
+                          <Title>{data.name}</Title>
                         </Flex>
                       </Card.Section>
 
@@ -115,9 +134,9 @@ function Category() {
                         bg="#F24E1E"
                         radius="6"
                         component={Link}
-                        to="/categories/create"
+                        to={`/categories/${data.id}`}
                       >
-                        Explore about {data} category
+                        Explore about {data.name} category
                       </Button>
                     </Card>{" "}
                   </Grid.Col>
@@ -127,7 +146,26 @@ function Category() {
           </Flex>
         </Box>
       </Box>
-      <AddCategoryModal opened={opened} open={open} close={close} />
+
+      <FormModal
+        opened={opened}
+        open={open}
+        close={close}
+        inputLabel={"Name"}
+        form={categoryForm}
+        selectedCategory={selectedCategory}
+        mutateFunction={selectedCategory ? editCategoryMutate : categoryMutate}
+        inputName={"name"}
+      />
+
+      <DeleteModal
+        opened={deleteModalOpened}
+        open={deleteModalOpen}
+        close={deleteModalClose}
+        mutateFunction={deleteCategoryMutate}
+        selectedCategory={selectedCategory}
+        title={"Delete Categroy"}
+      />
     </>
   );
 }

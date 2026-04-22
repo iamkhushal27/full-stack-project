@@ -12,7 +12,7 @@ module.exports = {
         allowNull: false,
       },
 
-      name: {
+      priority_name: {
         type: Sequelize.STRING,
         allowNull: false,
       },
@@ -41,7 +41,7 @@ module.exports = {
       },
     });
     await queryInterface.addConstraint("priorities", {
-      fields: ["name", "category_id"],
+      fields: ["priority_name", "category_id"],
       type: "unique",
       name: "category_priority_unique",
     });

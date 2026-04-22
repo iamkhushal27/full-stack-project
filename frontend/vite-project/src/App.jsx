@@ -7,17 +7,25 @@ import {
   ThemeIcon,
   Avatar,
   NavLink,
+  Popover,
 } from "@mantine/core";
 import { Outlet, useLocation, Link } from "react-router-dom";
 import { GoSearch } from "react-icons/go";
-import { IoIosNotifications } from "react-icons/io";
+import { IoIosNotifications, IoMdCalendar } from "react-icons/io";
 import { FaCalendarAlt } from "react-icons/fa";
+import { useFilter } from "./store/filter";
+import { DateInput, DatePicker } from "@mantine/dates";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import IconBox from "./components/iconBox";
+import IconCalender from "./components/iconCalender";
 
 function App() {
   const location = useLocation();
+  /use for location of url /;
+  const selectedDate = useFilter((state) => state.selectedDate);
+  const setSelectedDate = useFilter((state) => state.setSelectedDate);
+  console.log(selectedDate);
 
   const data = [
     { icon: IoIosNotifications, label: "Dashboard", href: "/" },
@@ -25,6 +33,7 @@ function App() {
     { icon: IoIosNotifications, label: "Settings", href: "/settings" },
     { icon: IoIosNotifications, label: "My Account", href: "/myaccount" },
     { icon: IoIosNotifications, label: "Categories", href: "/categories" },
+    { icon: IoIosNotifications, label: "Store", href: "/store" },
   ];
   const items = data.map((item, index) => (
     <NavLink
@@ -53,7 +62,6 @@ function App() {
     />
   ));
 
-  console.log(location);
   return (
     <Box h="100vh" bg="#F5F8FF">
       <Box h="10vh">
@@ -78,15 +86,11 @@ function App() {
                 MyIcon={IoIosNotifications}
                 backgroundColor={"red"}
               />
-              <IconBox
-                size={38}
-                MyIcon={FaCalendarAlt}
-                backgroundColor={"red"}
-              />
+              <IconCalender />
             </Flex>
             <Flex direction="column">
               <Text>tuesday</Text>
-              <Text>17-4-26</Text>
+              <Text>{selectedDate}</Text>
             </Flex>
           </Flex>
         </Flex>
@@ -108,6 +112,7 @@ function App() {
           </Flex>
           <Box> {items}</Box>
         </Box>
+
         <Box h="83vh" w="80vw" mt="7vh">
           <Outlet />
         </Box>

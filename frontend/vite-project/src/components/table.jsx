@@ -1,57 +1,56 @@
 import { Table } from "@mantine/core";
 
-const elements = [
-  { position: 6, name: "Carbon" },
-  { position: 7, name: "Nitrogen" },
-  { position: 7, name: "Nitrogen" },
-];
+function MyTable({ data = [], columns, labels = {}, h }) {
+  if (!data.length) return <p>No data</p>;
 
-function MyTable({ h }) {
-  const rows = elements.map((element, index) => (
-    <Table.Tr key={element.name}>
-      <Table.Td>{index + 1}</Table.Td> {/* 👈 Row number */}
-      <Table.Td>{element.position}</Table.Td>
-      <Table.Td>{element.name}</Table.Td>
-    </Table.Tr>
-  ));
+  const rows = data.map((row, index) => {
+    return (
+      <Table.Tr key={index}>
+        <Table.Td>{index + 1}</Table.Td>
+        {columns.map((col) => {
+          return (
+            <Table.Td key={col.key} width={col.width}>
+              {col.render ? col.render(row) : row[col.key] ?? "—"}
+            </Table.Td>
+          );
+        })}
+      </Table.Tr>
+    );
+  });
 
   return (
     <Table.ScrollContainer minWidth={500} type="native">
       <Table
-        h={h}
         verticalSpacing="xs"
         horizontalSpacing="xs"
         highlightOnHover
         withTableBorder
         withColumnBorders
+        layout=""
         withRowBorders={false}
         bd="1px solid #A1A3AB"
         styles={{
-          tbody: {
-            overflowY: "scroll",
-            border: " 1px solid #A1A3AB",
-          },
-          thead: {
-            borderBottom: " 1px solid #A1A3AB",
-          },
+          
+          thead: { borderBottom: "1px solid #A1A3AB" },
           th: {
             fontWeight: 600,
             textAlign: "center",
-            borderRight: "1px solid #A1A3AB", // ✅ column divider in header
+            borderRight: "1px solid #A1A3AB",
           },
-
           td: { textAlign: "center", borderRight: "1px solid #A1A3AB" },
         }}
+      
       >
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>#</Table.Th> {/* 👈 New column */}
-            <Table.Th>Element position</Table.Th>
-            <Table.Th>Element name</Table.Th>
-            
+            <Table.Th w="5%">#</Table.Th>
+            {columns.map((col) => (
+              <Table.Th key={col.key} style={{ width: col.width }}>
+                {col.label}
+              </Table.Th>
+            ))}
           </Table.Tr>
         </Table.Thead>
-
         <Table.Tbody>{rows}</Table.Tbody>
       </Table>
     </Table.ScrollContainer>

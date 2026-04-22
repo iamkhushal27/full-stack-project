@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         allowNull: false,
       },
-      name: {
+      priority_name: {
         type: DataTypes.STRING,
         allowNull: false,
       },
@@ -30,6 +30,12 @@ module.exports = (sequelize, DataTypes) => {
     Priority.belongsTo(models.Category, {
       foreignKey: "category_id",
       as: "category",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+    });
+    Priority.hasMany(models.Todo, {
+      foreignKey: "priority_id",
+      as: "todos",
       onDelete: "CASCADE",
       onUpdate: "CASCADE",
     });

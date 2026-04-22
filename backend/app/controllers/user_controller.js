@@ -60,7 +60,7 @@ module.exports = {
         throw new UnauthorizedError("Invalid email or password");
       }
       const token = await generateToken(existingUserByEmail?.id);
-      console.log("done");
+
       res
         .status(200)
         .cookie("token", token, {
@@ -69,6 +69,8 @@ module.exports = {
         })
         .json({
           status: "success",
+          data: existingUserByEmail,
+          token,
           message: "Login successful",
         });
     } catch (error) {

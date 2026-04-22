@@ -12,7 +12,10 @@ module.exports = (sequelize, DataTypes) => {
       name: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+      },
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
       },
     },
     {
@@ -24,6 +27,12 @@ module.exports = (sequelize, DataTypes) => {
 
   // 🔗 Associations
   Category.associate = (models) => {
+    Category.belongsTo(models.User, {
+      foreignKey: "user_id",
+      as: "user",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+    });
     Category.hasMany(models.Todo, {
       foreignKey: "category_id",
       as: "todos",

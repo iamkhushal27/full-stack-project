@@ -8,14 +8,18 @@ import {
   Text,
   Box,
 } from "@mantine/core";
-import { useForm } from "@mantine/form";
 
-function AddCategoryModal({ opened, open, close }) {
-  const form = useForm({
-    initialValues: {
-      name: "",
-    },
-  });
+function FormModal({
+  opened,
+  open,
+  close,
+  title,
+  inputName,
+  inputLabel,
+  form,
+  mutateFunction,
+  selectedCategory,
+}) {
   return (
     <>
       <Modal
@@ -25,7 +29,6 @@ function AddCategoryModal({ opened, open, close }) {
         styles={{
           body: {
             height: "80vh", // 👈 set height here
-
             padding: "80px",
           },
         }}
@@ -33,11 +36,14 @@ function AddCategoryModal({ opened, open, close }) {
       >
         <Flex direction="column" h="100%" w="100%" justify="space-between">
           <Flex justify="space-between" align="center">
-            <Title order={2}>Task Categories</Title>
+            <Title order={2}>{title}</Title>
             <Text
               td="underline"
               style={{ cursor: "pointer" }}
-              onClick={() => {}}
+              onClick={() => {
+                form.reset();
+                close();
+              }}
               fw="inherit"
             >
               Go back
@@ -46,16 +52,40 @@ function AddCategoryModal({ opened, open, close }) {
           <Box h="90%" w="100%" bdrs="md" p="md" bd="1px solid #A1A3AB">
             <form
               onSubmit={form.onSubmit((values) => {
-                console.log(values);
-                close();
-                form.reset();
+                let payload;
+
+                if (!selectedCategory) {
+                  // ✅ Pure create
+                  payload = values;
+                } else if (!selectedCategory.id && selectedCategory.parentId) {
+                  payload = {
+                    parentId: selectedCategory.parentId,
+                    ...values,
+                  };
+                } else {
+                  payload = {
+                    id: selectedCategory.id,
+                    ...(selectedCategory.parentId && {
+                      parentId: selectedCategory.parentId,
+                    }),
+                    ...values,
+                  };
+                }
+                console.log(payload);
+                mutateFunction(payload, {
+                  onSuccess: (response) => {
+                    console.log(response);
+                    close();
+                    form.reset();
+                  },
+                });
               })}
             >
               <Flex gap="lg" direction="column">
                 <TextInput
-                  label="Name"
+                  label={inputLabel}
                   w="80%"
-                  {...form.getInputProps("name")}
+                  {...form.getInputProps(inputName)}
                   styles={{
                     input: {
                       border: "1px solid #A1A3AB",
@@ -68,7 +98,8 @@ function AddCategoryModal({ opened, open, close }) {
                 />
                 <Flex gap="sm">
                   <Button bg="#F24E1E" radius="6" w="25%" type="submit">
-                    Create
+                    {selectedCategory?.id ? "Update" : "Create"}{" "}
+                    {/* ✅ dynamic label */}
                   </Button>
                   <Button
                     bg="#F24E1E"
@@ -90,4 +121,4 @@ function AddCategoryModal({ opened, open, close }) {
     </>
   );
 }
-export default AddCategoryModal;
+export default FormModal;

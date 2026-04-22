@@ -122,9 +122,7 @@ function Login() {
                   </Button>
                 </Group>
               </form>
-              <Button bg="#FF9090" onClick={refetch} radius="sm">
-                data
-              </Button>
+             
             </Flex>
           </Flex>
         </Paper>

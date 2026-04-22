@@ -27,62 +27,143 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useFileUpload } from "../service/file.service";
 import { useDisclosure } from "@mantine/hooks";
-import AddCategoryModal from "../components/addCategoryModal";
+import FormModal from "../components/addModal";
 import { Link } from "react-router-dom";
 import MyTable from "../components/table";
+import { ActionIcon } from "@mantine/core";
+import DeleteModal from "../components/deleteModal";
+import {
+  deletePriority,
+  editPriority,
+  getPriorities,
+  priorityCreate,
+} from "../service/priority.service";
+import {
+  deleteStatus,
+  editStatus,
+  getStatuses,
+  statusCreate,
+} from "../service/status.service";
+import { useParams } from "react-router-dom";
 
 function SingleCategory() {
-  const [imageFile, setImageFile] = useState("");
-  const [preview, setPreview] = useState("");
-  const [img, setImg] = useState("");
-  const { mutate: uploadFile } = useFileUpload();
-  const { mutate } = userUpdate();
-  const queryClient = useQueryClient();
-  const [opened, { open, close }] = useDisclosure(false);
+  const { id } = useParams(); // ✅ gets the id from the URL
 
-  const heading = [
-    "circket",
-    "work",
-    "football",
-    "show",
-    "circket",
-    "work",
-    "football",
-    "show",
-    "circket",
-    "work",
-    "football",
-    "show",
-    "circket",
-    "work",
-    "football",
-    "show",
-    "circket",
-    "work",
-    "football",
-    "show",
-    "circket",
-    "work",
-    "football",
-    "show",
-  ];
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [deleteModalType, setDeleteModalType] = useState("");
+  const [statusOpened, { open: statusOpen, close: statusClose }] =
+    useDisclosure(false);
+  const [priorityOpened, { open: priorityOpen, close: priorityClose }] =
+    useDisclosure(false);
+  const [
+    deleteModalOpened,
+    { open: deleteModalOpen, close: deleteModalClose },
+  ] = useDisclosure(false);
+  const { mutate: statusMutate } = statusCreate();
+  const { mutate: priorityMutate } = priorityCreate();
+  const { mutate: editPriorityMutate } = editPriority();
+  const { mutate: editStatusMutate } = editStatus();
+  const { mutate: deletePriorityMutate } = deletePriority();
+  const { mutate: deleteStatusMutate } = deleteStatus();
 
-  const { data, refetch } = useQuery({
-    queryKey: ["todos"],
-    queryFn: getUserData,
+  const { data: priorityData } = useQuery({
+    queryKey: ["priorities", id], // ✅ id in key
+    queryFn: () => getPriorities(id), // ✅ id in function
+    enabled: !!id, // ✅ only runs when id exists
   });
 
-  const form = useForm({
-    mode: "uncontrolled",
+  const { data: statusData } = useQuery({
+    queryKey: ["statuses", id], // ✅ id in key
+    queryFn: () => getStatuses(id), // ✅ id in function
+    enabled: !!id, // ✅ only runs when id exists
+  });
+  console.log(priorityData);
+  console.log(statusData);
+
+  const statusForm = useForm({
     initialValues: {
-      name: "",
-      email: "",
-      profile_image: "",
-    },
-    validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
+      statusName: "",
     },
   });
+  const priorityForm = useForm({
+    initialValues: {
+      priorityName: "",
+    },
+  });
+
+  const priorityColumns = [
+    { key: "priority_name", label: "Priority Name", width: "55%" },
+    {
+      key: "actions",
+      label: "Actions",
+      width: "40%", // 👈 just add this one line
+      render: (row) => (
+        <Group justify="center" gap="xl">
+          <Button
+            w="22%"
+            onClick={() => {
+              priorityOpen();
+              priorityForm.setValues({ priorityName: row.priority_name });
+              setSelectedCategory({ id: row.id, parentId: row.category_id });
+            }}
+            bg="#F24E1E"
+            radius="6"
+          >
+            Edit
+          </Button>
+          <Button
+            bg="#F24E1E"
+            radius="6"
+            w="22%"
+            onClick={() => {
+              setDeleteModalType("priority");
+              deleteModalOpen(); // ✅ one open
+              setSelectedCategory({ id: row.id, parentId: row.category_id });
+            }}
+          >
+            Delete
+          </Button>
+        </Group>
+      ),
+    },
+  ];
+  const statusColumns = [
+    { key: "status_name", label: "Status Name", width: "55%" },
+    {
+      key: "actions",
+      label: "Actions",
+      width: "40%", // 👈 just add this one line
+      render: (row) => (
+        <Group justify="center" gap="xl">
+          <Button
+            w="22%"
+            onClick={() => {
+              console.log(row);
+              statusOpen();
+              statusForm.setValues({ statusName: row.status_name });
+              setSelectedCategory({ id: row.id, parentId: row.category_id });
+            }}
+            bg="#F24E1E"
+            radius="6"
+          >
+            Edit
+          </Button>
+          <Button
+            onClick={() => {
+              setDeleteModalType("status");
+              deleteModalOpen(); // ✅ same open
+              setSelectedCategory({ id: row.id, parentId: row.category_id });
+            }}
+            bg="#F24E1E"
+            radius="6"
+            w="22%"
+          >
+            Delete
+          </Button>
+        </Group>
+      ),
+    },
+  ];
 
   return (
     <>
@@ -120,7 +201,10 @@ function SingleCategory() {
                     bg="transparent"
                     c="#A1A3AB"
                     p={0}
-                    onClick={open}
+                    onClick={() => {
+                      statusOpen();
+                      setSelectedCategory({ parentId: id });
+                    }}
                     leftSection={
                       <FaPlus
                         style={{
@@ -134,7 +218,11 @@ function SingleCategory() {
                   </Button>
                 </Flex>
 
-                <MyTable h="80%" />
+                <MyTable
+                  data={statusData?.data}
+                  columns={statusColumns}
+                  h={300}
+                />
               </Flex>
             </Box>
             <Divider my="sm" />
@@ -149,7 +237,10 @@ function SingleCategory() {
                     bg="transparent"
                     c="#A1A3AB"
                     p={0}
-                    onClick={open}
+                    onClick={() => {
+                      priorityOpen();
+                      setSelectedCategory({ parentId: id });
+                    }}
                     leftSection={
                       <FaPlus
                         style={{
@@ -162,13 +253,51 @@ function SingleCategory() {
                     Add Task Priority
                   </Button>
                 </Flex>
-                <MyTable h="80%" />
+                <MyTable
+                  data={priorityData?.data}
+                  columns={priorityColumns}
+                  h={300}
+                />
               </Flex>
             </Box>
           </Box>
         </Box>
       </Box>
-      <AddCategoryModal opened={opened} open={open} close={close} />
+      <FormModal
+        opened={statusOpened}
+        open={statusOpen}
+        close={statusClose}
+        inputLabel={"Status"}
+        form={statusForm}
+        mutateFunction={selectedCategory?.id ? editStatusMutate : statusMutate}
+        inputName={"statusName"}
+        selectedCategory={selectedCategory}
+      />
+      <FormModal
+        opened={priorityOpened}
+        open={priorityOpen}
+        close={priorityClose}
+        inputLabel={"Priority"}
+        form={priorityForm}
+        mutateFunction={
+          selectedCategory?.id ? editPriorityMutate : priorityMutate
+        }
+        inputName={"priorityName"}
+        selectedCategory={selectedCategory}
+      />
+      <DeleteModal
+        opened={deleteModalOpened}
+        close={deleteModalClose}
+        mutateFunction={
+          deleteModalType === "priority"
+            ? deletePriorityMutate
+            : deleteStatusMutate
+        }
+        selectedCategory={selectedCategory}
+        title={
+          deleteModalType === "priority" ? "Delete Priority" : "Delete Status"
+        }
+      />
     </>
   );
 }

@@ -9,7 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getTodos } from "../service/todo.service";
 import { useEffect, useState } from "react";
 
-function Settings() {
+function MyTodos() {
   const selectedDate = useFilter((state) => state.selectedDate);
   if (selectedDate) {
   }
@@ -70,4 +70,4 @@ function Settings() {
     </>
   );
 }
-export default Settings;
+export default MyTodos;

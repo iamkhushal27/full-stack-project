@@ -4,8 +4,10 @@ import { formatDateOnly } from "../utils/date";
 import { useFilter } from "../store/filter";
 
 export function todoCreate() {
+  const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (data) => {
+     
       const formattedDate = data?.date ? formatDateOnly(data.date) : undefined;
       const todoData = axios.post(
         "http://localhost:3000/api/users/todos/",
@@ -21,7 +23,10 @@ export function todoCreate() {
       return todoData;
     },
     onSuccess: (data) => {
-      console.log(data);
+      const selectedDate = useFilter.getState().selectedDate;
+      queryClient.invalidateQueries({
+        queryKey: ["todos", formatDateOnly(selectedDate)], // ✅
+      });
     },
     onError: (err) => {
       console.log(err);

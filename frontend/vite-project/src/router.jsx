@@ -3,12 +3,13 @@ import App from "./App";
 import Dashboard from "./pages/dashboard";
 import Registration from "./pages/registration";
 import Login from "./pages/login";
-import Settings from "./pages/myTodos";
+import MyTodos from "./pages/myTodos";
 import MyAccount from "./pages/myaccount";
 import Category from "./pages/categories";
 import SingleCategory from "./pages/singleCategory";
 import AuthRoute from "./components/protectedRoute";
 import StoreMy from "./pages/store";
+
 
 const router = createBrowserRouter([
   {
@@ -20,7 +21,7 @@ const router = createBrowserRouter([
     ), // ✅ element not Component
     children: [
       { index: true, Component: Dashboard },
-      { path: "settings", Component: Settings },
+      { path: "mytodos", Component: MyTodos },
       { path: "myaccount", Component: MyAccount },
       { path: "Store", Component: StoreMy },
       {

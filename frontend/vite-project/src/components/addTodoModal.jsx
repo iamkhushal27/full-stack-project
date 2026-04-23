@@ -78,13 +78,11 @@ function AddTodoModal({ opened, close, open }) {
       >
         <form
           onSubmit={form.onSubmit((values) => {
-            console.log(values);
             if (preview) {
               const formData = new FormData();
               formData.append("profile_image", values.uploadImage);
               fileUpload(formData, {
                 onSuccess: (data) => {
-                  console.log(data);
                   mutate({
                     title: values.title,
                     date: values.date,

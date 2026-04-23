@@ -18,7 +18,6 @@ function DeleteModal({
   selectedCategory,
   setData,
 }) {
-  console.log(selectedCategory);
   return (
     <>
       <Modal
@@ -49,7 +48,6 @@ function DeleteModal({
                     },
                   });
                 } else {
-                  console.log(selectedCategory);
                   mutateFunction(selectedCategory.id, {
                     onSuccess: () => {
                       setData(null);

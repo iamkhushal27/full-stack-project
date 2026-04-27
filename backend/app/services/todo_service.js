@@ -123,6 +123,7 @@ module.exports = {
 
   updateTodo: async function (id, user_id, data) {
     try {
+      console.log(data)
       const todo = await Todo.findOne({
         where: { id, user_id },
       });
@@ -161,7 +162,6 @@ module.exports = {
       }
 
       await todo.update(data);
-      return this.getSingleTodo(id, user_id);
     } catch (error) {
       if (error instanceof NotFoundError || error instanceof BadRequestError) {
         throw error;

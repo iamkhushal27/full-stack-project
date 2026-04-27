@@ -4,10 +4,10 @@ import { HiDotsHorizontal } from "react-icons/hi";
 import TodoChip from "../components/todochip";
 import { DonutChart } from "@mantine/charts";
 import { useDisclosure } from "@mantine/hooks";
-import AddTodoModal from "../components/addTodoModal";
 import { useQuery } from "@tanstack/react-query";
 import { useFilter } from "../store/filter";
 import { getTodos } from "../service/todo.service";
+import TodoModal from "../components/todoModal";
 
 function Dashboard() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -17,8 +17,6 @@ function Dashboard() {
     queryKey: ["todos", selectedDate ?? "all"],
     queryFn: () => getTodos(selectedDate),
   });
-
-  console.log(todoData);
 
   const data = [
     { name: "USA", value: 400, color: "indigo.6" },
@@ -67,9 +65,9 @@ function Dashboard() {
             })}
 
             <Divider mt="sm" mb="xl" />
-             {todoData?.data?.map((data) => {
-                return <TodoChip data={data} />;
-              })}
+            {todoData?.data?.map((data) => {
+              return <TodoChip data={data} />;
+            })}
           </Flex>
         </Box>
         <Stack h="95%" w="45%" m="sm" mr="xl">
@@ -114,7 +112,7 @@ function Dashboard() {
             bdrs="md"
             p="lg"
           >
-            <Stack gap="md" h="100%" w="100%">
+            <Stack style={{ overflowY: "auto" }} gap="md" h="100%" w="100%">
               <Text>Task comleted</Text>
               {todoData?.data?.map((data) => {
                 return <TodoChip data={data} />;
@@ -123,7 +121,7 @@ function Dashboard() {
           </Box>
         </Stack>
       </Flex>
-      <AddTodoModal opened={opened} close={close} open={open} />
+      <TodoModal opened={opened} close={close} open={open} />
     </>
   );
 }

@@ -18,10 +18,21 @@ function MyTodos() {
   const { data: todoData } = useQuery({
     queryKey: ["todos", selectedDate ?? "all"],
     queryFn: () => getTodos(selectedDate),
+    keepPreviousData: false,
   });
   useEffect(() => {
     setData(null);
   }, [selectedDate]);
+
+  useEffect(() => {
+    if (!data || !todoData?.data) return;
+
+    const updated = todoData.data.find((item) => item.id === data.id);
+
+    if (updated) {
+      setData(updated); // ✅ replace old object with fresh one
+    }
+  }, [todoData]);
 
   return (
     <>

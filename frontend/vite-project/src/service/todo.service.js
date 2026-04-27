@@ -7,7 +7,6 @@ export function todoCreate() {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (data) => {
-     
       const formattedDate = data?.date ? formatDateOnly(data.date) : undefined;
       const todoData = axios.post(
         "http://localhost:3000/api/users/todos/",
@@ -60,6 +59,31 @@ export function deleteTodo() {
       const selectedDate = useFilter.getState().selectedDate;
       queryClient.invalidateQueries({
         queryKey: ["todos", formatDateOnly(selectedDate)], // ✅
+      });
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+  return mutation;
+}
+export function updateTodo() {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: (data) => {
+      console.log(data);
+      return axios.patch(
+        `http://localhost:3000/api/users/todos/${data.id}`,
+        data,
+        {
+          withCredentials: true,
+        }
+      );
+    },
+    onSuccess: (_, todoId) => {
+      const selectedDate = useFilter.getState().selectedDate;
+      queryClient.invalidateQueries({
+        queryKey: ["todos", formatDateOnly(selectedDate)],
       });
     },
     onError: (error) => {

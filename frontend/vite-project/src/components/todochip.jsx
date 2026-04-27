@@ -9,7 +9,6 @@ function TodoChip({ data = {}, setData = () => {} }) {
         bd="1px solid #A1A3AB"
         bdrs="lg"
         onClick={() => {
-          console.log(data);
           setData(data);
         }}
         mx="xl"

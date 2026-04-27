@@ -78,7 +78,7 @@ function MyAccount() {
 
     if (imageFile) {
       const formData = new FormData();
-      formData.append("profile_image", imageFile);
+      formData.append("images", imageFile);
       uploadFile(formData, {
         onSuccess: (response) => {
           mutate(

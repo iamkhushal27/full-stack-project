@@ -9,7 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getTodos } from "../service/todo.service";
 import { useEffect, useState } from "react";
 
-function Settings() {
+function MyTodos() {
   const selectedDate = useFilter((state) => state.selectedDate);
   if (selectedDate) {
   }
@@ -18,10 +18,21 @@ function Settings() {
   const { data: todoData } = useQuery({
     queryKey: ["todos", selectedDate ?? "all"],
     queryFn: () => getTodos(selectedDate),
+    keepPreviousData: false,
   });
   useEffect(() => {
     setData(null);
   }, [selectedDate]);
+
+  useEffect(() => {
+    if (!data || !todoData?.data) return;
+
+    const updated = todoData.data.find((item) => item.id === data.id);
+
+    if (updated) {
+      setData(updated); // ✅ replace old object with fresh one
+    }
+  }, [todoData]);
 
   return (
     <>
@@ -70,4 +81,4 @@ function Settings() {
     </>
   );
 }
-export default Settings;
+export default MyTodos;

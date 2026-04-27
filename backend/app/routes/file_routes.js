@@ -8,6 +8,6 @@ const {
 
 const router = express.Router();
 
-router.post("/", Auth, upload.single("profile_image"),fileUpload );
+router.post("/", Auth, upload.single("images"),fileUpload );
 
 module.exports = router;

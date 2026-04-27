@@ -6,20 +6,20 @@ cloudinary.config({
 });
 
 const uploadToCloudinary = async (fileBuffer) => {
-    try {
-      if (!fileBuffer) return null;
-  
-      // ✅ convert buffer to base64 string
-      const base64 = `data:image/png;base64,${fileBuffer.toString("base64")}`;
-  
-      const response = await cloudinary.uploader.upload(base64, {
-        resource_type: "auto",
-        folder: "profile_images",
-      });
-  
-      return response.secure_url; // ✅ return just the URL
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  try {
+    if (!fileBuffer) return null;
+
+    // ✅ convert buffer to base64 string
+    const base64 = `data:image/png;base64,${fileBuffer.toString("base64")}`;
+
+    const response = await cloudinary.uploader.upload(base64, {
+      resource_type: "auto",
+      folder: "images",
+    });
+
+    return response.secure_url; // ✅ return just the URL
+  } catch (error) {
+    console.log(error);
+  }
+};
 module.exports = { uploadToCloudinary };

@@ -17,25 +17,22 @@ import { useState } from "react";
 import DeleteModal from "./deleteModal";
 import { useDisclosure } from "@mantine/hooks";
 import { deleteTodo } from "../service/todo.service";
+import TodoModal from "./todoModal";
 
 function TodoShow({ data = null, setData = () => {} }) {
   const [editable, setEditable] = useState(false);
   const [deleteData, setDeleteData] = useState({});
   const [opened, { open, close }] = useDisclosure(false);
+  const [openedTodoModal, { open: openTodoModal, close: closeTodoModal }] =
+    useDisclosure(false);
   const { mutate: deleteMutate } = deleteTodo();
 
-  function edit() {
-    if (editable) {
-      console.log(editable);
-    } else {
-      console.log("false", editable);
-    }
-
-    setEditable((value) => !value);
+  function editFunction() {
+    console.log(data);
+    openTodoModal();
   }
   function deleteFunction(params) {
     setDeleteData(data);
-    console.log(data);
     open();
   }
 
@@ -104,7 +101,7 @@ function TodoShow({ data = null, setData = () => {} }) {
                 />
                 <IconBox
                   MyIcon={RiEditBoxFill}
-                  myFunction={edit}
+                  myFunction={editFunction}
                   backgroundColor={"red"}
                   size={40}
                 />
@@ -115,6 +112,14 @@ function TodoShow({ data = null, setData = () => {} }) {
           <>Todo is not selected</>
         )}
       </Flex>
+      <TodoModal
+        key={data?.id}
+        opened={openedTodoModal}
+        close={closeTodoModal}
+        open={openTodoModal}
+        editData={data?.id ? data : null} // editData ✅
+        isEdit={true}
+      />
       <DeleteModal
         opened={opened}
         open={open}

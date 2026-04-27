@@ -15,8 +15,8 @@ import { Radio, Group } from "@mantine/core";
 import img from "../assets/Group 53.png";
 import { useForm, isNotEmpty } from "@mantine/form";
 import { DateInput } from "@mantine/dates";
-import { useState } from "react";
-import { todoCreate } from "../service/todo.service";
+import { useEffect, useState } from "react";
+import { todoCreate, updateTodo } from "../service/todo.service";
 import { useFileUpload } from "../service/file.service";
 import { useQuery } from "@tanstack/react-query";
 
@@ -25,10 +25,11 @@ import { getCategories } from "../service/category.service";
 import { getStatuses } from "../service/status.service";
 import { getPriorities } from "../service/priority.service";
 
-function AddTodoModal({ opened, close, open }) {
+function TodoModal({ opened, close, open, isEdit = false, editData = null }) {
   const user = useAuth((state) => state.user);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
+  const { mutate: updateMutate } = updateTodo();
   const { mutate } = todoCreate();
   const [preview, setPreview] = useState(null);
   const { mutate: fileUpload } = useFileUpload();
@@ -51,7 +52,7 @@ function AddTodoModal({ opened, close, open }) {
 
   const form = useForm({
     initialValues: {
-      title: "",
+      title: "", // ✅ just empty defaults
       date: new Date(),
       category: null,
       priority: null,
@@ -66,6 +67,26 @@ function AddTodoModal({ opened, close, open }) {
       description: isNotEmpty("Description is required"),
     },
   });
+
+  // ✅ update form when editData changes
+  useEffect(() => {
+    if (editData?.id && isEdit) {
+      // ✅ useEffect handles edit data
+      form.setValues({
+        title: editData.title,
+        date: new Date(editData.date),
+        category: String(editData.category_id),
+        priority: String(editData.priority_id),
+        status: String(editData.status_id),
+        description: editData.description,
+        uploadImage: editData.task_image,
+      });
+      setSelectedCategoryId(String(editData.category_id));
+    } else {
+      form.reset(); // ✅ clears form for add mode
+    }
+  }, [editData, isEdit]);
+
   return (
     <>
       <Modal
@@ -78,28 +99,99 @@ function AddTodoModal({ opened, close, open }) {
       >
         <form
           onSubmit={form.onSubmit((values) => {
-            console.log(values);
-            if (preview) {
-              const formData = new FormData();
-              formData.append("profile_image", values.uploadImage);
-              fileUpload(formData, {
-                onSuccess: (data) => {
-                  console.log(data);
-                  mutate({
-                    title: values.title,
-                    date: values.date,
-                    category: values.category,
-                    priority: values.priority,
-                    status: values.status,
-                    description: values.description,
-                    uploadImage: data.data.url, // ✅ cloudinary URL
-                  });
+            if (isEdit) {
+              const normalizedEditData = {
+                title: editData.title,
+                date: new Date(editData.date),
+                category: String(editData.category_id),
+                priority: String(editData.priority_id),
+                status: String(editData.status_id),
+                description: editData.description,
+                uploadImage: editData.task_image,
+              };
 
-                  close();
-                  form.reset();
-                  setPreview(null);
-                },
-              });
+              const changedValues = Object.keys(values).reduce((acc, key) => {
+                if (key === "date") return acc;
+
+                if (values[key] !== normalizedEditData[key]) {
+                  acc[key] = values[key];
+                }
+
+                return acc;
+              }, {});
+
+              if (Object.keys(changedValues).length === 0 && !preview) {
+                close();
+                return;
+              }
+              console.log(changedValues);
+              // ✅ Map fields for backend
+              let payload = {
+                id: editData.id,
+                ...changedValues,
+                category_id: changedValues.category,
+                priority_id: changedValues.priority,
+                status_id: changedValues.status,
+              };
+
+              delete payload.category;
+              delete payload.priority;
+              delete payload.status;
+
+              // ✅ IMAGE HANDLING
+              if (preview) {
+                const formData = new FormData();
+                console.log("1");
+
+                formData.append("images", values.uploadImage); // ✅ correct
+                console.log("2");
+
+                fileUpload(formData, {
+                  onSuccess: (data) => {
+                    updateMutate({
+                      ...payload,
+                      uploadImage: data.data.url, // ✅ correct key
+                    });
+
+                    close();
+                    form.reset();
+                    setPreview(null);
+                  },
+                });
+              } else {
+                // ❌ Remove uploadImage if it's just old URL
+                delete payload.uploadImage;
+                console.log(payload, "payload");
+
+                updateMutate(payload, {
+                  onSuccess: () => {
+                    close();
+                    form.reset();
+                  },
+                });
+              }
+            } else {
+              if (preview) {
+                const formData = new FormData();
+                formData.append("images", values.uploadImage);
+                fileUpload(formData, {
+                  onSuccess: (data) => {
+                    mutate({
+                      title: values.title,
+                      date: values.date,
+                      category: values.category,
+                      priority: values.priority,
+                      status: values.status,
+                      description: values.description,
+                      uploadImage: data.data.url, // ✅ cloudinary URL
+                    });
+
+                    close();
+                    form.reset();
+                    setPreview(null);
+                  },
+                });
+              }
             }
           })}
         >
@@ -153,6 +245,7 @@ function AddTodoModal({ opened, close, open }) {
                   label="Date"
                   w="65%"
                   maxDate={new Date()}
+                  disabled={isEdit ? true : false}
                   {...form.getInputProps("date")}
                   styles={{
                     input: {
@@ -164,7 +257,6 @@ function AddTodoModal({ opened, close, open }) {
                     },
                   }}
                 />
-                <Text>Priority</Text>
                 <Select
                   label="Category"
                   placeholder={isLoading ? "Loading..." : "Pick category"}
@@ -177,10 +269,14 @@ function AddTodoModal({ opened, close, open }) {
                     })) || []
                   }
                   onChange={(value) => {
+                    if (isEdit) {
+                      form.setValues({ priority: null, status: null });
+                    }
                     setSelectedCategoryId(value); // ✅ triggers priority/status fetch
                     form.setFieldValue("category", value); // ✅ saves to form
                   }}
                 />
+
                 {selectedCategoryId ? (
                   <Select
                     label="priority"
@@ -243,62 +339,48 @@ function AddTodoModal({ opened, close, open }) {
                     bdrs={6}
                     onClick={() => document.getElementById("fileInput").click()}
                   >
-                    {preview ? (
-                      // ✅ show preview when image selected
+                    <Flex
+                      justify="center"
+                      align="center"
+                      h="100%"
+                      direction="column"
+                      gap="md"
+                    >
                       <img
-                        src={preview}
-                        alt="preview"
+                        src={img}
+                        alt=""
                         style={{
-                          width: "100%",
-                          height: "100%",
+                          width: "50px",
+                          height: "50px",
                           objectFit: "cover",
-                          borderRadius: "6px",
                         }}
                       />
-                    ) : (
                       <Flex
+                        direction="column"
                         justify="center"
                         align="center"
-                        h="100%"
-                        direction="column"
-                        gap="md"
+                        gap={4}
                       >
-                        <img
-                          src={img}
-                          alt=""
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            objectFit: "cover",
+                        <Text c="#A1A3AB">Drag&Drop files here</Text>
+                        <Text c="#A1A3AB">or</Text>
+                        <FileInput
+                          id="fileInput"
+                          clearable
+                          placeholder="Browse"
+                          type="file"
+                          accept="image/*"
+                          {...form.getInputProps("uploadImage")}
+                          onChange={(file) => {
+                            console.log("inEdit");
+                            form.setFieldValue("uploadImage", file); // ✅ update form
+                            setPreview(file ? URL.createObjectURL(file) : null); // ✅ set preview
+                          }}
+                          styles={{
+                            input: { borderRadius: "6px" },
                           }}
                         />
-                        <Flex
-                          direction="column"
-                          justify="center"
-                          align="center"
-                          gap={4}
-                        >
-                          <Text c="#A1A3AB">Drag&Drop files here</Text>
-                          <Text c="#A1A3AB">or</Text>
-                          <FileInput
-                            id="fileInput"
-                            clearable
-                            placeholder="Browse"
-                            type="file"
-                            accept="image/*"
-                            onChange={(file) => {
-                              form.setFieldValue("uploadImage", file); // ✅ update form
-                              setPreview(
-                                file ? URL.createObjectURL(file) : null
-                              ); // ✅ set preview
-                            }}
-                            styles={{
-                              input: { borderRadius: "6px" },
-                            }}
-                          />
-                        </Flex>
                       </Flex>
-                    )}
+                    </Flex>
                   </Box>
                 </Flex>
               </Stack>
@@ -314,4 +396,4 @@ function AddTodoModal({ opened, close, open }) {
     </>
   );
 }
-export default AddTodoModal;
+export default TodoModal;

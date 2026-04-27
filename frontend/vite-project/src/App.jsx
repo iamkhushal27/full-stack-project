@@ -19,6 +19,13 @@ import { DateInput, DatePicker } from "@mantine/dates";
 import { useEffect, useState } from "react";
 import IconBox from "./components/iconBox";
 import IconCalender from "./components/iconCalender";
+import { FcTodoList } from "react-icons/fc";
+import { MdAccountCircle } from "react-icons/md";
+import { TbCategoryFilled } from "react-icons/tb";
+import { LuListTodo } from "react-icons/lu";
+import { AiOutlineDashboard } from "react-icons/ai";
+import { BiTask } from "react-icons/bi";
+
 
 function App() {
   const location = useLocation();
@@ -28,12 +35,11 @@ function App() {
   console.log(selectedDate);
 
   const data = [
-    { icon: IoIosNotifications, label: "Dashboard", href: "/" },
+    { icon: AiOutlineDashboard, label: "Dashboard", href: "/" },
 
-    { icon: IoIosNotifications, label: "Settings", href: "/settings" },
-    { icon: IoIosNotifications, label: "My Account", href: "/myaccount" },
-    { icon: IoIosNotifications, label: "Categories", href: "/categories" },
-    { icon: IoIosNotifications, label: "Store", href: "/store" },
+    { icon: BiTask, label: "My Todos", href: "/mytodos" },
+    { icon: TbCategoryFilled, label: "Categories", href: "/categories" },
+    { icon: MdAccountCircle, label: "My Account", href: "/myaccount" },
   ];
   const items = data.map((item, index) => (
     <NavLink
@@ -101,7 +107,7 @@ function App() {
           mt="7vh"
           w="20vw"
           bg="#FF6767"
-          bdrs=""
+          bdrs="sm"
           style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
         >
           <Flex pos="relative" bottom={40} align="center" direction="column">

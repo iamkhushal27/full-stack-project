@@ -99,9 +99,9 @@ module.exports = {
       const {
         title,
         description,
-        category,
-        priority,
-        status,
+        category_id,
+        priority_id,
+        status_id,
         uploadImage,
         date,
         completed,
@@ -113,14 +113,17 @@ module.exports = {
       if (description !== undefined) updateData.description = description;
       if (uploadImage !== undefined) updateData.task_image = uploadImage;
       if (date !== undefined) updateData.date = parseDateOnly(date);
-      if (category !== undefined) {
-        updateData.category_id = parsePositiveInt(category, "category");
+      if (category_id !== undefined) {
+        updateData.category_id = parsePositiveInt(category_id, "category");
       }
-      if (priority !== undefined) {
-        updateData.priority_id = parseOptionalRelationId(priority, "priority");
+      if (priority_id !== undefined) {
+        updateData.priority_id = parseOptionalRelationId(
+          priority_id,
+          "priority"
+        );
       }
-      if (status !== undefined) {
-        updateData.status_id = parseOptionalRelationId(status, "status");
+      if (status_id !== undefined) {
+        updateData.status_id = parseOptionalRelationId(status_id, "status");
       }
       if (completed !== undefined) {
         if (typeof completed !== "boolean") {
@@ -128,17 +131,17 @@ module.exports = {
         }
         updateData.completed = completed;
       }
+      console.log(updateData);
 
       if (!Object.keys(updateData).length) {
         throw new BadRequestError("Update data is required");
       }
 
-      const todo = await updateTodo(id, userId, updateData);
+      await updateTodo(id, userId, updateData);
 
       res.status(200).json({
         status: "success",
         message: "Todo updated successfully",
-        data: todo,
       });
     } catch (error) {
       next(error);

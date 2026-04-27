@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
 export function userRegister(userData) {
@@ -20,7 +20,7 @@ export async function getUserData() {
     const response = await axios.get("http://localhost:3000/api/users/", {
       withCredentials: true,
     });
-    return response.data; // ✅ return just the data
+    return response; // ✅ return just the data
   } catch (error) {
     const message =
       error.response?.data?.message || error.message || "Something went wrong";
@@ -29,9 +29,13 @@ export async function getUserData() {
 }
 
 export function userUpdate(userData) {
+  const queryClient = useQueryClient();
+
   const mutation = useMutation({
     onSuccess: (data) => {
-      console.log(data);
+      queryClient.invalidateQueries({
+        queryKey: ["user"],
+      });
     },
     onError: (error) => {
       console.log(error);
@@ -41,6 +45,7 @@ export function userUpdate(userData) {
       const data = axios.patch("http://localhost:3000/api/users/", userData, {
         withCredentials: true,
       });
+      return data
     },
   });
   return mutation;

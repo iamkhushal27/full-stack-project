@@ -29,10 +29,9 @@ function MyAccount() {
   const queryClient = useQueryClient();
 
   const { data, refetch } = useQuery({
-    queryKey: ["todos"],
+    queryKey: ["user"],
     queryFn: getUserData,
   });
-
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
@@ -45,19 +44,20 @@ function MyAccount() {
     },
   });
 
+  // ✅ Sync form values once data loads
   useEffect(() => {
-    console.log(data, "done");
     if (data?.data) {
       form.setValues({
-        name: data?.data.name,
-        email: data?.data.email,
-        profile_image: data?.data.profile_image,
+        name: data.data.name,
+        email: data.data.email,
+        profile_image: data.data.profile_image,
       });
-      setImg(data?.data.profile_image);
+      setPreview(data.data.profile_image);
     }
-  }, [data?.data]);
+  }, [data]);
 
   const handleFileChange = (file) => {
+    console.log(file);
     // Mantine FileInput gives you file directly, not e.target.files[0]
     if (file) {
       setImageFile(file);
@@ -65,44 +65,38 @@ function MyAccount() {
       form.setValues({
         profile_image: file,
       });
+    } else {
+      setImageFile("");
+      form.setValues({
+        profile_image: "",
+      });
     }
   };
   function handleSubmit(values) {
     const originalData = data?.data;
+    console.log(originalData);
+   
 
     // ✅ only keep changed fields
     const changedFields = {};
     if (values.name !== originalData?.name) changedFields.name = values.name;
     if (values.email !== originalData?.email)
       changedFields.email = values.email;
+    if (!imageFile) changedFields.profile_image = values.profile_image;
 
     if (imageFile) {
       const formData = new FormData();
       formData.append("images", imageFile);
       uploadFile(formData, {
         onSuccess: (response) => {
-          mutate(
-            {
-              ...changedFields,
-              profile_image: response.data.url,
-            },
-            {
-              onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: ["todos"] });
-              },
-            }
-          );
+          mutate({
+            ...changedFields,
+            profile_image: response.data.url,
+          });
         },
       });
     } else {
-      mutate(
-        { ...changedFields },
-        {
-          onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["todos"] });
-          },
-        }
-      );
+      mutate({ ...changedFields });
     }
   }
 
@@ -128,10 +122,10 @@ function MyAccount() {
               Go Back
             </Flex>
             <Flex align="center" gap="md">
-              <Avatar size="120" src={img}></Avatar>
+              <Avatar size="120" src={data?.data.profile_image}></Avatar>
               <Stack gap={4}>
-                <Title order={3}>Sundar Gurung</Title>
-                <Text fz={15}>sundargurung360@gmail.com</Text>
+                <Title order={3}>{data?.data.name}</Title>
+                <Text fz={15}>{data?.data?.email}</Text>
               </Stack>
             </Flex>
 
@@ -188,6 +182,7 @@ function MyAccount() {
                     label="Upload files"
                     placeholder="Upload files"
                     accept="image/*"
+                    {...form.getInputProps("profile_image")}
                     onChange={handleFileChange} // ✅ Mantine passes file directly
                     styles={{
                       input: {

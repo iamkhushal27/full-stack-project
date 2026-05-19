@@ -1,7 +1,6 @@
-"use strict";
-module.exports = (sequelize, DataTypes) => {
-  const Priority = sequelize.define(
-    "Priority",
+export default (sequelize, DataTypes) => {
+  const Status = sequelize.define(
+    "Status",
     {
       id: {
         type: DataTypes.INTEGER,
@@ -9,37 +8,38 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         allowNull: false,
       },
-      priority_name: {
+      status_name: {
         type: DataTypes.STRING,
         allowNull: false,
       },
       category_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
+       
       },
     },
     {
-      tableName: "priorities",
+      tableName: "statuses",
       timestamps: true,
       underscored: true,
     }
   );
 
   // 🔗 Associations
-  Priority.associate = (models) => {
-    Priority.belongsTo(models.Category, {
+  Status.associate = (models) => {
+    Status.belongsTo(models.Category, {
       foreignKey: "category_id",
       as: "category",
       onDelete: "CASCADE",
       onUpdate: "CASCADE",
     });
-    Priority.hasMany(models.Todo, {
-      foreignKey: "priority_id",
+    Status.hasMany(models.Todo, {
+      foreignKey: "status_id",
       as: "todos",
       onDelete: "CASCADE",
       onUpdate: "CASCADE",
     });
   };
 
-  return Priority;
+  return Status;
 };

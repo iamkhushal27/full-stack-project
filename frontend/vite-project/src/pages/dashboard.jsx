@@ -1,4 +1,13 @@
-import { Avatar, Box, Divider, Flex, Paper, Stack, Text } from "@mantine/core";
+import {
+  Avatar,
+  Box,
+  Center,
+  Divider,
+  Flex,
+  Paper,
+  Stack,
+  Text,
+} from "@mantine/core";
 import { GoFileZip } from "react-icons/go";
 import { HiDotsHorizontal } from "react-icons/hi";
 import TodoChip from "../components/todochip";
@@ -19,10 +28,16 @@ function Dashboard() {
   });
 
   const data = [
-    { name: "USA", value: 400, color: "indigo.6" },
-    { name: "India", value: 300, color: "yellow.6" },
-    { name: "Japan", value: 100, color: "teal.6" },
-    { name: "Other", value: 200, color: "gray.6" },
+    {
+      name: "Completed",
+      value: todoData?.data?.filter((data) => data.completed).length,
+      color: "indigo.6",
+    },
+    {
+      name: "Not Completed",
+      value: todoData?.data?.filter((data) => !data.completed).length,
+      color: "yellow.6",
+    },
   ];
   return (
     <>
@@ -60,14 +75,17 @@ function Dashboard() {
             py="lg"
             style={{ overflowY: "auto" }}
           >
-            {todoData?.data?.map((data) => {
-              return <TodoChip data={data} />;
-            })}
-
-            <Divider mt="sm" mb="xl" />
-            {todoData?.data?.map((data) => {
-              return <TodoChip data={data} />;
-            })}
+            {todoData?.data?.length > 0 ? (
+              todoData.data
+                .filter((data) => !data.completed) // ✅ filter first
+                .map((data) => (
+                  <TodoChip key={data.id} data={data} /> // ✅ add key
+                ))
+            ) : (
+              <Center>
+                <Text>No task to show</Text>
+              </Center>
+            )}
           </Flex>
         </Box>
         <Stack h="95%" w="45%" m="sm" mr="xl">
@@ -80,28 +98,13 @@ function Dashboard() {
             {" "}
             <Flex h="100%" w="100%" justify="space-evenly">
               <DonutChart
-                h="80%"
-                w="30%"
+                h="70%"
+                w="40%"
                 miw="150"
                 thickness={20}
                 data={data}
-                withTooltip={false}
-              />
-              <DonutChart
-                h="80%"
-                w="30%"
-                miw="150"
-                thickness={20}
-                data={data}
-                withTooltip={false}
-              />
-              <DonutChart
-                h="80%"
-                w="30%"
-                miw="150"
-                thickness={20}
-                data={data}
-                withTooltip={false}
+                withLabelsLine
+                labelsType="percent"
               />
             </Flex>
           </Box>
@@ -113,9 +116,11 @@ function Dashboard() {
             p="lg"
           >
             <Stack style={{ overflowY: "auto" }} gap="md" h="100%" w="100%">
-              <Text>Task comleted</Text>
+              <Text>Task completed</Text>
               {todoData?.data?.map((data) => {
-                return <TodoChip data={data} />;
+                if (data.completed) {
+                  return <TodoChip data={data} />;
+                }
               })}
             </Stack>
           </Box>

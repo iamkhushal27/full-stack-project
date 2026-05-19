@@ -16,6 +16,8 @@ import background from "../assets/background.png";
 import { userLogin } from "../service/login.service";
 import { useQuery } from "@tanstack/react-query";
 import { getUserData } from "../service/user.service";
+import { loginSchema } from "../schemas/user.schema";
+import { getJoiFormErrors } from "../utils/joiValidate";
 
 function Login() {
   const form = useForm({
@@ -25,25 +27,27 @@ function Login() {
       password: "",
     },
 
-    validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
-    },
+    validate: (values) => getJoiFormErrors(loginSchema, values),
   });
 
   const { mutate: loginUser, isPending, isSuccess, isError } = userLogin();
   const { data, refetch, isLoading } = useQuery({
     queryKey: ["todos"],
     queryFn: getUserData,
-    enabled: false, // auto calling stop 
+    enabled: false, // auto calling stop
   });
   const handleSubmit = (data) => {
-    loginUser(data);
+    loginUser(data, {
+      onError: (error) => {
+        const message =
+          error.response?.data?.message || "Invalid email or password";
+        form.setFieldError("password", message); // ✅ shows under password
+      },
+    });
   };
   if (isPending) {
     return <div>loading...</div>;
   }
-  
-
 
   return (
     <Box
@@ -122,7 +126,6 @@ function Login() {
                   </Button>
                 </Group>
               </form>
-             
             </Flex>
           </Flex>
         </Paper>

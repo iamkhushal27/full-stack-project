@@ -14,7 +14,7 @@ export function statusCreate() {
     },
     mutationFn: ({ parentId: categoryId, ...data }) => {
       return axios.post(
-        `http://localhost:3000/api/users/category/${categoryId}/status`,
+        `http://localhost:3000/api/categories/${categoryId}/status`,
         data,
         {
           withCredentials: true,
@@ -28,7 +28,7 @@ export function statusCreate() {
 export async function getStatuses(categoryId) {
   try {
     const response = await axios.get(
-      `http://localhost:3000/api/users/category/${categoryId}/status`,
+      `http://localhost:3000/api/categories/${categoryId}/status`,
       {
         withCredentials: true,
       }
@@ -54,7 +54,7 @@ export function editStatus() {
     },
     mutationFn: ({ id, parentId: categoryId, ...data }) => {
       return axios.patch(
-        `http://localhost:3000/api/users/category/${categoryId}/status/${id}`,
+        `http://localhost:3000/api/categories/${categoryId}/status/${id}`,
         data,
         {
           withCredentials: true,
@@ -70,7 +70,7 @@ export function deleteStatus() {
   const mutation = useMutation({
     mutationFn: ({ id, parentId: categoryId }) => {
       return axios.delete(
-        `http://localhost:3000/api/users/category/${categoryId}/status/${id}`,
+        `http://localhost:3000/api/categories/${categoryId}/status/${id}`,
         {
           withCredentials: true,
         }

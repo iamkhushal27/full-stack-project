@@ -9,10 +9,11 @@ export function categoryCreate() {
       console.log(data);
     },
     onError: (error) => {
-      console.log(error);
+      console.log(error.response.data);         // ✅ clean — no http:// links
+      console.log(error.response.data.errors);
     },
     mutationFn: (data) => {
-      return axios.post("http://localhost:3000/api/users/category/", data, {
+      return axios.post("http://localhost:3000/api/categories/", data, {
         withCredentials: true,
       });
     },
@@ -22,7 +23,7 @@ export function categoryCreate() {
 export async function getCategories() {
   try {
     const response = await axios.get(
-      "http://localhost:3000/api/users/category/",
+      "http://localhost:3000/api/categories/",
       {
         withCredentials: true,
       }
@@ -47,7 +48,7 @@ export function EditCategroy() {
     mutationFn: ({ id, ...data }) => {
       console.log(data, id);
       return axios.patch(
-        `http://localhost:3000/api/users/category/${id}`,
+        `http://localhost:3000/api/categories/${id}`,
         data,
         {
           withCredentials: true,
@@ -61,7 +62,7 @@ export function deleteCategory() {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (id) => {
-      return axios.delete(`http://localhost:3000/api/users/category/${id}`, {
+      return axios.delete(`http://localhost:3000/api/categories/${id}`, {
         withCredentials: true,
       });
     },

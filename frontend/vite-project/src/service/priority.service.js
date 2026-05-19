@@ -14,7 +14,7 @@ export function priorityCreate() {
     },
     mutationFn: ({ parentId: categoryId, ...data }) => {
       return axios.post(
-        `http://localhost:3000/api/users/category/${categoryId}/priority`,
+        `http://localhost:3000/api/categories/${categoryId}/priority`,
         data,
         {
           withCredentials: true,
@@ -28,7 +28,7 @@ export function priorityCreate() {
 export async function getPriorities(categoryId) {
   try {
     const response = await axios.get(
-      `http://localhost:3000/api/users/category/${categoryId}/priority`,
+      `http://localhost:3000/api/categories/${categoryId}/priority`,
       {
         withCredentials: true,
       }
@@ -54,7 +54,7 @@ export function editPriority() {
     },
     mutationFn: ({ id, parentId: categoryId, ...data }) => {
       return axios.patch(
-        `http://localhost:3000/api/users/category/${categoryId}/priority/${id}`,
+        `http://localhost:3000/api/categories/${categoryId}/priority/${id}`,
         data,
         {
           withCredentials: true,
@@ -70,7 +70,7 @@ export function deletePriority() {
   const mutation = useMutation({
     mutationFn: ({ id, parentId: categoryId }) => {
       return axios.delete(
-        `http://localhost:3000/api/users/category/${categoryId}/priority/${id}`,
+        `http://localhost:3000/api/categories/${categoryId}/priority/${id}`,
         {
           withCredentials: true,
         }

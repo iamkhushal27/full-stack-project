@@ -50,7 +50,7 @@ function DeleteModal({
                 } else {
                   mutateFunction(selectedCategory.id, {
                     onSuccess: () => {
-                      setData(null);
+                      if (setData) setData(null);
                       close();
                     },
                   });

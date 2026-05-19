@@ -27,7 +27,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useFileUpload } from "../service/file.service";
 import { useDisclosure } from "@mantine/hooks";
-import FormModal from "../components/addModal";
+import FormModal from "../components/Addmodal";
 import { Link } from "react-router-dom";
 import MyTable from "../components/table";
 import { ActionIcon } from "@mantine/core";
@@ -45,6 +45,15 @@ import {
   statusCreate,
 } from "../service/status.service";
 import { useParams } from "react-router-dom";
+import {
+  createStatusSchema,
+  updateStatusSchema,
+} from "../schemas/status.schema";
+import {
+  createPrioritySchema,
+  updatePrioritySchema,
+} from "../schemas/priority.schema";
+import { getJoiFormErrors } from "../utils/joiValidate";
 
 function SingleCategory() {
   const { id } = useParams(); // ✅ gets the id from the URL
@@ -84,10 +93,20 @@ function SingleCategory() {
     initialValues: {
       statusName: "",
     },
+    validate: (values) => {
+      const schema = selectedCategory?.id ? updateStatusSchema : createStatusSchema;
+      return getJoiFormErrors(schema, values);
+    },
   });
   const priorityForm = useForm({
     initialValues: {
       priorityName: "",
+    },
+    validate: (values) => {
+      const schema = selectedCategory?.id
+        ? updatePrioritySchema
+        : createPrioritySchema;
+      return getJoiFormErrors(schema, values);
     },
   });
 

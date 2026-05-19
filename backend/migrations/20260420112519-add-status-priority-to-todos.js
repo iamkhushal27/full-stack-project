@@ -1,5 +1,5 @@
 "use strict";
-module.exports = {
+export default {
   async up(queryInterface, Sequelize) {
     await queryInterface.addColumn("todos", "priority_id", {
       type: Sequelize.INTEGER,

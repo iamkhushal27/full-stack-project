@@ -28,10 +28,18 @@ module.exports = {
       email,
       password: hashedPassword,
     });
+    if (!user) {
+      throw new NotFoundError("User could not be created");
+    }
+
     return user;
   },
   getUserById: async function (data) {
     const user = await User.findByPk(data.id);
+    if (!user) {
+      throw new NotFoundError(`User with id ${data.id} not found`);
+    }
+
     return user.dataValues;
   },
   updateUser: async function (id, data) {

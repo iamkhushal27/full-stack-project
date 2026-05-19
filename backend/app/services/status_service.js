@@ -1,31 +1,23 @@
 const db = require("../models");
-const { DatabaseError, NotFoundError } = require("../utils/error");
+const { NotFoundError } = require("../utils/error");
 
 const Status = db.Status;
 
 module.exports = {
   createStatus: async function ({ statusName, category_id }) {
-    try {
-      const status = await Status.create({
-        status_name: statusName,
-        category_id,
-      });
-      return status;
-    } catch (error) {
-      throw new DatabaseError(error.message);
-    }
+    const status = await Status.create({
+      status_name: statusName,
+      category_id,
+    });
+    return status;
   },
 
   getAllStatuses: async function (category_id) {
-    try {
-      const statuses = await Status.findAll({
-        where: { category_id },
-        order: [["id", "DESC"]],
-      });
-      return statuses;
-    } catch (error) {
-      throw new DatabaseError(error.message);
-    }
+    const statuses = await Status.findAll({
+      where: { category_id },
+      order: [["id", "DESC"]],
+    });
+    return statuses;
   },
 
   getStatusByName: async function ({ statusName, category_id }) {
@@ -36,56 +28,35 @@ module.exports = {
   },
 
   getSingleStatus: async function (id, category_id) {
-    try {
-      const status = await Status.findOne({
-        where: { id, category_id },
-      });
-      if (!status) {
-        throw new NotFoundError("Status not found");
-      }
-      return status;
-    } catch (error) {
-      if (error instanceof NotFoundError) {
-        throw error;
-      }
-      throw new DatabaseError(error.message);
+    const status = await Status.findOne({
+      where: { id, category_id },
+    });
+    if (!status) {
+      throw new NotFoundError("Status not found");
     }
+    return status;
   },
 
   updateStatus: async function (id, category_id, data) {
-    try {
-      const status = await Status.findOne({
-        where: { id, category_id },
-      });
-      if (!status) {
-        throw new NotFoundError("Status not found");
-      }
-      const updateData = {
-        status_name: data.statusName,
-      };
-      await status.update(updateData);
-    } catch (error) {
-      if (error instanceof NotFoundError) {
-        throw error;
-      }
-      throw new DatabaseError(error.message);
+    const status = await Status.findOne({
+      where: { id, category_id },
+    });
+    if (!status) {
+      throw new NotFoundError("Status not found");
     }
+    const updateData = {
+      status_name: data.statusName,
+    };
+    await status.update(updateData);
   },
 
   deleteStatus: async function (id, category_id) {
-    try {
-      const status = await Status.findOne({
-        where: { id, category_id },
-      });
-      if (!status) {
-        throw new NotFoundError("Status not found");
-      }
-      await status.destroy();
-    } catch (error) {
-      if (error instanceof NotFoundError) {
-        throw error;
-      }
-      throw new DatabaseError(error.message);
+    const status = await Status.findOne({
+      where: { id, category_id },
+    });
+    if (!status) {
+      throw new NotFoundError("Status not found");
     }
+    await status.destroy();
   },
 };

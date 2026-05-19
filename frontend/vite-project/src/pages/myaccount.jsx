@@ -75,7 +75,6 @@ function MyAccount() {
   function handleSubmit(values) {
     const originalData = data?.data;
     console.log(originalData);
-   
 
     // ✅ only keep changed fields
     const changedFields = {};
@@ -93,6 +92,9 @@ function MyAccount() {
             ...changedFields,
             profile_image: response.data.url,
           });
+        },
+        onError: (err) => {
+          console.log(err);
         },
       });
     } else {

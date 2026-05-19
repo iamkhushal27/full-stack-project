@@ -9,7 +9,7 @@ export function todoCreate() {
     mutationFn: (data) => {
       const formattedDate = data?.date ? formatDateOnly(data.date) : undefined;
       const todoData = axios.post(
-        "http://localhost:3000/api/users/todos/",
+        "http://localhost:3000/api/todos/",
         {
           ...data,
           date: formattedDate,
@@ -18,7 +18,6 @@ export function todoCreate() {
           withCredentials: true,
         }
       );
-      console.log(todoData);
       return todoData;
     },
     onSuccess: (data) => {
@@ -36,7 +35,7 @@ export function todoCreate() {
 export async function getTodos(date) {
   try {
     const formattedDate = date ? formatDateOnly(date) : undefined;
-    const response = await axios.get(`http://localhost:3000/api/users/todos/`, {
+    const response = await axios.get(`http://localhost:3000/api/todos/`, {
       params: formattedDate ? { date: formattedDate } : undefined,
       withCredentials: true,
     });
@@ -51,7 +50,7 @@ export function deleteTodo() {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (id) => {
-      return axios.delete(`http://localhost:3000/api/users/todos/${id}`, {
+      return axios.delete(`http://localhost:3000/api/todos/${id}`, {
         withCredentials: true,
       });
     },
@@ -73,7 +72,7 @@ export function updateTodo() {
     mutationFn: (data) => {
       console.log(data);
       return axios.patch(
-        `http://localhost:3000/api/users/todos/${data.id}`,
+        `http://localhost:3000/api/todos/${data.id}`,
         data,
         {
           withCredentials: true,

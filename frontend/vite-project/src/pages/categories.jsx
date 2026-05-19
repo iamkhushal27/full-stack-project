@@ -25,7 +25,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useFileUpload } from "../service/file.service";
 import { useDisclosure } from "@mantine/hooks";
-import FormModal from "../components/addModal";
+import Addmodal from "../components/Addmodal";
 import { Link } from "react-router-dom";
 import {
   categoryCreate,
@@ -34,6 +34,11 @@ import {
   getCategories,
 } from "../service/category.service";
 import DeleteModal from "../components/deleteModal";
+import {
+  createCategorySchema,
+  updateCategorySchema,
+} from "../schemas/category.schema";
+import { getJoiFormErrors } from "../utils/joiValidate";
 
 function Category() {
   
@@ -50,6 +55,12 @@ function Category() {
   const categoryForm = useForm({
     initialValues: {
       name: "",
+    },
+    validate: (values) => {
+      const schema = selectedCategory?.id
+        ? updateCategorySchema
+        : createCategorySchema;
+      return getJoiFormErrors(schema, values);
     },
   });
 
@@ -147,7 +158,7 @@ function Category() {
         </Box>
       </Box>
 
-      <FormModal
+      <Addmodal
         opened={opened}
         open={open}
         close={close}

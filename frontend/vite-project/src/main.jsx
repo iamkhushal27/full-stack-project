@@ -3,6 +3,9 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css"; // ✅ add this
+import '@mantine/charts/styles.css';
+
+
 
 // Mantine
 import "@mantine/core/styles.css";

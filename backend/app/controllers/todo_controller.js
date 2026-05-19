@@ -131,7 +131,6 @@ module.exports = {
         }
         updateData.completed = completed;
       }
-      console.log(updateData);
 
       if (!Object.keys(updateData).length) {
         throw new BadRequestError("Update data is required");

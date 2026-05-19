@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import { Radio, Group } from "@mantine/core";
 import img from "../assets/Group 53.png";
-import { useForm, isNotEmpty } from "@mantine/form";
+import { useForm } from "@mantine/form";
 import { DateInput } from "@mantine/dates";
 import { useEffect, useState } from "react";
 import { todoCreate, updateTodo } from "../service/todo.service";
@@ -24,6 +24,8 @@ import { useAuth } from "../store/auth";
 import { getCategories } from "../service/category.service";
 import { getStatuses } from "../service/status.service";
 import { getPriorities } from "../service/priority.service";
+import { createTodoSchema, updateTodoSchema } from "../schemas/todo.schema";
+import { getJoiFormErrors } from "../utils/joiValidate";
 
 function TodoModal({ opened, close, open, isEdit = false, editData = null }) {
   const user = useAuth((state) => state.user);
@@ -59,12 +61,54 @@ function TodoModal({ opened, close, open, isEdit = false, editData = null }) {
       status: null,
       description: "",
       uploadImage: null,
+      completed: "false",
     },
-    validate: {
-      title: isNotEmpty("Title is required"),
-      date: isNotEmpty("Date is required"),
-      priority: isNotEmpty("Priority is required"),
-      description: isNotEmpty("Description is required"),
+    validate: (values) => {
+      if (isEdit) {
+        const normalizedEditData = {
+          title: editData?.title,
+          category: editData?.category_id ? String(editData.category_id) : null,
+          priority: editData?.priority_id ? String(editData.priority_id) : null,
+          status: editData?.status_id ? String(editData.status_id) : null,
+          description: editData?.description,
+          completed: String(editData?.completed),
+        };
+
+        const updatePayload = {};
+        if (values.title !== normalizedEditData.title)
+          updatePayload.title = values.title;
+        if (values.category !== normalizedEditData.category) {
+          updatePayload.category_id = values.category;
+        }
+        if (values.priority !== normalizedEditData.priority) {
+          updatePayload.priority_id = values.priority;
+        }
+        if (values.status !== normalizedEditData.status) {
+          updatePayload.status_id = values.status;
+        }
+        if (values.description !== normalizedEditData.description) {
+          updatePayload.description = values.description;
+        }
+        if (values.completed !== normalizedEditData.completed) {
+          updatePayload.completed = values.completed === "true";
+        }
+        if (preview) {
+          updatePayload.uploadImage = values.uploadImage;
+        }
+
+        return getJoiFormErrors(updateTodoSchema, updatePayload);
+      }
+
+      const createPayload = {
+        ...values,
+        date: values.date ? new Date(values.date).toISOString() : "",
+        uploadImage: values.uploadImage ? values.uploadImage : "",
+      };
+      console.log(createPayload);
+      const errors = getJoiFormErrors(createTodoSchema, createPayload);
+
+      console.log("VALIDATION ERRORS", errors);
+      return errors;
     },
   });
 
@@ -80,6 +124,7 @@ function TodoModal({ opened, close, open, isEdit = false, editData = null }) {
         status: String(editData.status_id),
         description: editData.description,
         uploadImage: editData.task_image,
+        completed: String(editData.completed),
       });
       setSelectedCategoryId(String(editData.category_id));
     } else {
@@ -99,6 +144,7 @@ function TodoModal({ opened, close, open, isEdit = false, editData = null }) {
       >
         <form
           onSubmit={form.onSubmit((values) => {
+            console.log(1);
             if (isEdit) {
               const normalizedEditData = {
                 title: editData.title,
@@ -108,6 +154,7 @@ function TodoModal({ opened, close, open, isEdit = false, editData = null }) {
                 status: String(editData.status_id),
                 description: editData.description,
                 uploadImage: editData.task_image,
+                completed: String(editData.completed),
               };
 
               const changedValues = Object.keys(values).reduce((acc, key) => {
@@ -119,6 +166,9 @@ function TodoModal({ opened, close, open, isEdit = false, editData = null }) {
 
                 return acc;
               }, {});
+              if (changedValues.completed !== undefined) {
+                changedValues.completed = changedValues.completed === "true";
+              }
 
               if (Object.keys(changedValues).length === 0 && !preview) {
                 close();
@@ -129,9 +179,15 @@ function TodoModal({ opened, close, open, isEdit = false, editData = null }) {
               let payload = {
                 id: editData.id,
                 ...changedValues,
-                category_id: changedValues.category,
-                priority_id: changedValues.priority,
-                status_id: changedValues.status,
+                ...(changedValues.category && {
+                  category_id: changedValues.category,
+                }),
+                ...(changedValues.priority && {
+                  priority_id: changedValues.priority,
+                }),
+                ...(changedValues.status && {
+                  status_id: changedValues.status,
+                }),
               };
 
               delete payload.category;
@@ -157,6 +213,12 @@ function TodoModal({ opened, close, open, isEdit = false, editData = null }) {
                     form.reset();
                     setPreview(null);
                   },
+                  onError: (error) => {
+                    const errors = error.response?.data?.errors || [];
+                    errors.forEach((err) => {
+                      form.setFieldError(err.field, err.message);
+                    });
+                  },
                 });
               } else {
                 // ❌ Remove uploadImage if it's just old URL
@@ -168,27 +230,52 @@ function TodoModal({ opened, close, open, isEdit = false, editData = null }) {
                     close();
                     form.reset();
                   },
+                  onError: (error) => {
+                    const errors = error.response?.data?.errors || [];
+                    errors.forEach((err) => {
+                      form.setFieldError(err.field, err.message);
+                    });
+                  },
                 });
               }
             } else {
+              console.log(2);
               if (preview) {
                 const formData = new FormData();
                 formData.append("images", values.uploadImage);
                 fileUpload(formData, {
                   onSuccess: (data) => {
-                    mutate({
-                      title: values.title,
-                      date: values.date,
-                      category: values.category,
-                      priority: values.priority,
-                      status: values.status,
-                      description: values.description,
-                      uploadImage: data.data.url, // ✅ cloudinary URL
+                    mutate(
+                      {
+                        title: values.title,
+                        date: values.date,
+                        category: values.category,
+                        priority: values.priority,
+                        status: values.status,
+                        description: values.description,
+                        completed: values.completed,
+                        uploadImage: data.data.url, // ✅ cloudinary URL
+                      },
+                      {
+                        onSuccess: () => {
+                          close();
+                          form.reset();
+                          setPreview(null);
+                        },
+                        onError: (error) => {
+                          const errors = error.response?.data?.errors || [];
+                          errors.forEach((err) => {
+                            form.setFieldError(err.field, err.message);
+                          });
+                        },
+                      }
+                    );
+                  },
+                  onError: (error) => {
+                    const errors = error.response?.data?.errors || [];
+                    errors.forEach((err) => {
+                      form.setFieldError(err.field, err.message);
                     });
-
-                    close();
-                    form.reset();
-                    setPreview(null);
                   },
                 });
               }
@@ -257,6 +344,20 @@ function TodoModal({ opened, close, open, isEdit = false, editData = null }) {
                     },
                   }}
                 />
+                {isEdit ? (
+                  <>
+                    <Radio.Group
+                      label="Status"
+                      {...form.getInputProps("completed")}
+                    >
+                      <Group mt="xs">
+                        <Radio value="true" label="Complete" />
+                        <Radio value="false" label="Incomplete" />
+                      </Group>
+                    </Radio.Group>
+                  </>
+                ) : null}
+
                 <Select
                   label="Category"
                   placeholder={isLoading ? "Loading..." : "Pick category"}

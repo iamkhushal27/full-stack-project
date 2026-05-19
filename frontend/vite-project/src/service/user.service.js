@@ -1,10 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { useNavigate } from "react-router";
+useNavigate;
 
 export function userRegister(userData) {
+  const navigate = useNavigate();
   const mutation = useMutation({
     onSuccess: (data) => {
-      console.log(data);
+      navigate("/login");
     },
     onError: (error) => {
       console.log(error);
@@ -45,7 +48,7 @@ export function userUpdate(userData) {
       const data = axios.patch("http://localhost:3000/api/users/", userData, {
         withCredentials: true,
       });
-      return data
+      return data;
     },
   });
   return mutation;

@@ -9,14 +9,30 @@ const {
 } = require("../controllers/category_controller");
 const statusRouter = require("./status_routes");
 const priorityRouter = require("./priority_routes");
+const { validate } = require("../middleware/schema.middleware");
+const {
+  createCategorySchema,
+  updateCategorySchema,
+} = require("../schemas/category.schema");
 
 const router = express.Router({ mergeParams: true });
 
-router.post("/", Auth, createCategoryController);
+router.post(
+  "/",
+  Auth,
+  validate(createCategorySchema),
+  createCategoryController
+);
 router.get("/", Auth, getAllCategoryController);
 router.get("/:id", Auth, getSingleCategoryController);
-router.patch("/:id", Auth, updateCategoryController);
+router.patch(
+  "/:id",
+  Auth,
+  validate(updateCategorySchema),
+  updateCategoryController
+);
 router.delete("/:id", Auth, deleteCategoryController);
+
 router.use("/:categoryId/status", statusRouter);
 router.use("/:categoryId/priority", priorityRouter);
 

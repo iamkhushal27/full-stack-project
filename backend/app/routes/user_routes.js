@@ -7,16 +7,18 @@ const {
   userSingle,
 } = require("../controllers/user_controller");
 const { Auth } = require("../middleware/auth.middleware");
-const categoryRouter = require("./category_routes");
-const todoRouter = require("./todo_routes");
+const { validate } = require("../middleware/schema.middleware");
+const {
+  registerSchema,
+  loginSchema,
+  updateUserSchema,
+} = require("../schemas/user.schema");
 
 const router = express.Router();
 
-router.post("/register", userRegister);
-router.post("/login", userLogin);
+router.post("/register", validate(registerSchema), userRegister);
+router.post("/login", validate(loginSchema), userLogin);
 router.get("/", Auth, userSingle);
-router.patch("/", Auth, userUpdate);
-router.use("/category", categoryRouter);
-router.use("/todos", todoRouter);
+router.patch("/", Auth, validate(updateUserSchema), userUpdate);
 
 module.exports = router;

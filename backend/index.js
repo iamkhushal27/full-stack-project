@@ -3,6 +3,8 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import errorHandler from "./app/middleware/error.middleware.js";
 import userRouter from "./app/routes/user_routes.js";
+import categoryRouter from "./app/routes/category_routes.js";
+import todoRouter from "./app/routes/todo_routes.js";
 import fileUplaodRouter from "./app/routes/file_routes.js";
 import dotenv from "dotenv";
 
@@ -11,7 +13,7 @@ dotenv.config();
 const app = express();
 
 app.use(express.json({ limit: "5mb" }));
-app.use(express.urlencoded({ limit: "5mb", extended: true }))
+app.use(express.urlencoded({ limit: "5mb", extended: true }));
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
@@ -19,9 +21,12 @@ app.use(
   })
 );
 app.use(cookieParser());
-app.use(errorHandler);
+
 app.use("/api/users", userRouter);
+app.use("/api/categories", categoryRouter);
+app.use("/api/todos", todoRouter);
 app.use("/api/fileuploading", fileUplaodRouter);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -14,6 +14,8 @@ import { useForm } from "@mantine/form";
 import img from "../assets/R 2.png";
 import background from "../assets/background.png";
 import { userRegister } from "../service/user.service";
+import { registerSchema } from "../schemas/user.schema";
+import { getJoiFormErrors } from "../utils/joiValidate";
 
 function Registration() {
   const {
@@ -22,11 +24,31 @@ function Registration() {
     isSuccess,
     isError,
   } = userRegister();
-  
-  const handleRegister=(data)=>{
-    console.log(data)
-    registerUser(data)
-  }
+
+  const handleRegister = (data) => {
+    console.log(data);
+    registerUser(data, {
+      onError: (error) => {
+        const errors = error.response?.data?.errors || [];
+        if (errors.length > 0) {
+          // ✅ validation errors from Zod
+          errors.forEach((err) => {
+            form.setFieldError(err.field, err.message);
+          });
+        } else {
+          // ✅ conflict errors like "Email already exists"
+          const message = error.response?.data?.message || "Something went wrong";
+          if (message.toLowerCase().includes("email")) {
+            form.setFieldError("email", message);
+          } else if (message.toLowerCase().includes("username") || message.toLowerCase().includes("name")) {
+            form.setFieldError("name", message);
+          } else {
+            form.setFieldError("email", message); // fallback
+          }
+        }
+      },
+    });
+  };
 
   const form = useForm({
     mode: "uncontrolled",
@@ -37,10 +59,12 @@ function Registration() {
       confirmPassword: "",
     },
 
-    validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
-      confirmPassword: (value, values) =>
-        value !== values.password ? "Passwords do not match" : null,
+    validate: (values) => {
+      const errors = getJoiFormErrors(registerSchema, values);
+      if (values.confirmPassword !== values.password) {
+        errors.confirmPassword = "Passwords do not match";
+      }
+      return errors;
     },
   });
   if (isPending) {
@@ -88,7 +112,9 @@ function Registration() {
               direction="column"
               gap="xl"
             >
-              <form onSubmit={form.onSubmit((values) => handleRegister(values))}>
+              <form
+                onSubmit={form.onSubmit((values) => handleRegister(values))}
+              >
                 <Flex gap="lg" direction="column">
                   <TextInput
                     withAsterisk

@@ -9,7 +9,7 @@ import {
   Box,
 } from "@mantine/core";
 
-function FormModal({
+function AddModal({
   opened,
   open,
   close,
@@ -71,12 +71,18 @@ function FormModal({
                     ...values,
                   };
                 }
-                console.log(payload);
+
                 mutateFunction(payload, {
                   onSuccess: (response) => {
                     console.log(response);
                     close();
                     form.reset();
+                  },
+                  onError: (error) => {
+                    const errors = error.response?.data?.errors || [];
+                    errors.forEach((err) => {
+                      form.setFieldError(inputName, err.message); // ✅ shows under the TextInput
+                    });
                   },
                 });
               })}
@@ -121,4 +127,4 @@ function FormModal({
     </>
   );
 }
-export default FormModal;
+export default AddModal;

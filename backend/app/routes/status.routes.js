@@ -1,17 +1,17 @@
-const express = require("express");
-const { Auth } = require("../middleware/auth.middleware");
-const {
+import express from "express";
+import { Auth } from "../middleware/auth.middleware.js";
+import {
   createStatusController,
   getAllStatusController,
   getSingleStatusController,
   updateStatusController,
   deleteStatusController,
-} = require("../controllers/status_controller");
-const { validate } = require("../middleware/schema.middleware");
-const {
+} from "../controllers/status.controller.js";
+import { validate } from "../middleware/schema.middleware.js";
+import {
   createStatusSchema,
   updateStatusSchema,
-} = require("../schemas/status.schema");
+} from "../schemas/status.schema.js";
 
 const router = express.Router({ mergeParams: true });
 
@@ -26,4 +26,4 @@ router.patch(
 );
 router.delete("/:id", Auth, deleteStatusController);
 
-module.exports = router;
+export default router;

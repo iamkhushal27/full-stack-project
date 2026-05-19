@@ -81,7 +81,6 @@ function MyAccount() {
     if (values.name !== originalData?.name) changedFields.name = values.name;
     if (values.email !== originalData?.email)
       changedFields.email = values.email;
-    if (!imageFile) changedFields.profile_image = values.profile_image;
 
     if (imageFile) {
       const formData = new FormData();

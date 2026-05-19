@@ -1,11 +1,12 @@
-const argon2 = require("argon2");
-const { InternalServerError, UnauthorizedError } = require("./error");
+import argon2 from "argon2";
+import { UnauthorizedError } from "./error.js";
 
-async function hashPassword(password) {
+export async function hashPassword(password) {
   const hashedPassword = await argon2.hash(password);
   return hashedPassword;
 }
-async function verifyPassword(password, oldpassword) {
+
+export async function verifyPassword(password, oldpassword) {
   const decryptPassword = await argon2.verify(oldpassword, password);
 
   if (!decryptPassword) {
@@ -14,8 +15,3 @@ async function verifyPassword(password, oldpassword) {
 
   return decryptPassword;
 }
-
-module.exports = {
-  hashPassword,
-  verifyPassword,
-};

@@ -2,10 +2,10 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import errorHandler from "./app/middleware/error.middleware.js";
-import userRouter from "./app/routes/user_routes.js";
-import categoryRouter from "./app/routes/category_routes.js";
-import todoRouter from "./app/routes/todo_routes.js";
-import fileUplaodRouter from "./app/routes/file_routes.js";
+import userRouter from "./app/routes/user.routes.js";
+import categoryRouter from "./app/routes/category.routes.js";
+import todoRouter from "./app/routes/todo.routes.js";
+import fileUplaodRouter from "./app/routes/file.routes.js";
 import dotenv from "dotenv";
 
 dotenv.config();

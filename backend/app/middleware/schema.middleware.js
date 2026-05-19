@@ -17,5 +17,4 @@ const validate = (schema) => (req, res, next) => {
     next();
   };
   
-  // ✅ use export not module.exports since your project uses ESM
-  export { validate };
+export { validate };

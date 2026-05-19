@@ -1,9 +1,12 @@
-const { Sequelize } = require("sequelize");
-const dbConfig = require("../config").development; // ✅ ../config not ../configs
-const fs = require("fs");
-const path = require("path");
+import { Sequelize } from "sequelize";
+import config from "../config.js";
+import defineUser from "./user.model.js";
+import defineCategory from "./category.model.js";
+import defineTodo from "./todo.model.js";
+import definePriority from "./priority.model.js";
+import defineStatus from "./status.model.js";
 
-const basename = path.basename(__filename);
+const dbConfig = config.development;
 
 const sequelize = new Sequelize(
   dbConfig.database,
@@ -21,16 +24,13 @@ const sequelize = new Sequelize(
 
 const db = {};
 
-fs.readdirSync(__dirname)
-  .filter(file =>
-    file.indexOf(".") !== 0 && file !== basename && file.slice(-3) === ".js"
-  )
-  .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
-  });
+db.User = defineUser(sequelize, Sequelize.DataTypes);
+db.Category = defineCategory(sequelize, Sequelize.DataTypes);
+db.Todo = defineTodo(sequelize, Sequelize.DataTypes);
+db.Priority = definePriority(sequelize, Sequelize.DataTypes);
+db.Status = defineStatus(sequelize, Sequelize.DataTypes);
 
-Object.keys(db).forEach(modelName => {
+Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
@@ -39,8 +39,9 @@ Object.keys(db).forEach(modelName => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-sequelize.authenticate()
+sequelize
+  .authenticate()
   .then(() => console.log("Successfully connected to the database"))
-  .catch(err => console.error("Could not connect:", err.message));
+  .catch((err) => console.error("Could not connect:", err.message));
 
-module.exports = db; // ✅ only one module.exports
+export default db;

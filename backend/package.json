@@ -1,6 +1,8 @@
 {
+  "type": "module",
   "scripts": {
-    "dev": "nodemon server.js"
+    "dev": "nodemon index.js",
+    "start": "node index.js"
   },
   "dependencies": {
     "argon2": "^0.44.0",

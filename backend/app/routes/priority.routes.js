@@ -1,17 +1,17 @@
-const express = require("express");
-const { Auth } = require("../middleware/auth.middleware");
-const {
+import express from "express";
+import { Auth } from "../middleware/auth.middleware.js";
+import {
   createPriorityController,
   getAllPriorityController,
   getSinglePriorityController,
   updatePriorityController,
   deletePriorityController,
-} = require("../controllers/priority_controller");
-const { validate } = require("../middleware/schema.middleware");
-const {
+} from "../controllers/priority.controller.js";
+import { validate } from "../middleware/schema.middleware.js";
+import {
   updatePrioritySchema,
   createPrioritySchema,
-} = require("../schemas/priority.schema");
+} from "../schemas/priority.schema.js";
 
 const router = express.Router({ mergeParams: true });
 
@@ -31,4 +31,4 @@ router.patch(
 );
 router.delete("/:id", Auth, deletePriorityController);
 
-module.exports = router;
+export default router;

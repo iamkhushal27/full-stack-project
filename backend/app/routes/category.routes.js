@@ -1,19 +1,19 @@
-const express = require("express");
-const { Auth } = require("../middleware/auth.middleware");
-const {
+import express from "express";
+import { Auth } from "../middleware/auth.middleware.js";
+import {
   createCategoryController,
   getAllCategoryController,
   getSingleCategoryController,
   updateCategoryController,
   deleteCategoryController,
-} = require("../controllers/category_controller");
-const statusRouter = require("./status_routes");
-const priorityRouter = require("./priority_routes");
-const { validate } = require("../middleware/schema.middleware");
-const {
+} from "../controllers/category.controller.js";
+import statusRouter from "./status.routes.js";
+import priorityRouter from "./priority.routes.js";
+import { validate } from "../middleware/schema.middleware.js";
+import {
   createCategorySchema,
   updateCategorySchema,
-} = require("../schemas/category.schema");
+} from "../schemas/category.schema.js";
 
 const router = express.Router({ mergeParams: true });
 
@@ -36,4 +36,4 @@ router.delete("/:id", Auth, deleteCategoryController);
 router.use("/:categoryId/status", statusRouter);
 router.use("/:categoryId/priority", priorityRouter);
 
-module.exports = router;
+export default router;

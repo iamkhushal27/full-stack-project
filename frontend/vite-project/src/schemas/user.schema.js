@@ -1,17 +1,12 @@
 import Joi from "joi";
 
 export const registerSchema = Joi.object({
-  name: Joi.string()
-    .trim()
-    .min(3)
-    .max(30)
-    .required()
-    .messages({
-      "string.empty": "Name is required",
-      "string.min": "Name must be at least 3 characters",
-      "string.max": "Name too long",
-      "any.required": "Name is required",
-    }),
+  name: Joi.string().trim().min(3).max(30).required().messages({
+    "string.empty": "Name is required",
+    "string.min": "Name must be at least 3 characters",
+    "string.max": "Name too long",
+    "any.required": "Name is required",
+  }),
   email: Joi.string().email().trim().lowercase().required().messages({
     "string.email": "Invalid email format",
     "string.empty": "Email is required",
@@ -24,10 +19,15 @@ export const registerSchema = Joi.object({
     .required()
     .messages({
       "string.min": "Password must be at least 8 characters",
-      "string.pattern.base": "Must contain at least one uppercase letter and one number",
+      "string.pattern.base":
+        "Must contain at least one uppercase letter and one number",
       "string.empty": "Password is required",
       "any.required": "Password is required",
     }),
+  confirmPassword: Joi.any().valid(Joi.ref("password")).required().messages({
+    "any.only": "Passwords do not match",
+    "any.required": "Confirm password is required",
+  }),
 });
 
 export const loginSchema = Joi.object({

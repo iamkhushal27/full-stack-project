@@ -1,18 +1,17 @@
-const express = require("express");
-const {
+import express from "express";
+import {
   userRegister,
   userLogin,
-  userGetOne,
   userUpdate,
   userSingle,
-} = require("../controllers/user_controller");
-const { Auth } = require("../middleware/auth.middleware");
-const { validate } = require("../middleware/schema.middleware");
-const {
+} from "../controllers/user.controller.js";
+import { Auth } from "../middleware/auth.middleware.js";
+import { validate } from "../middleware/schema.middleware.js";
+import {
   registerSchema,
   loginSchema,
   updateUserSchema,
-} = require("../schemas/user.schema");
+} from "../schemas/user.schema.js";
 
 const router = express.Router();
 
@@ -21,4 +20,4 @@ router.post("/login", validate(loginSchema), userLogin);
 router.get("/", Auth, userSingle);
 router.patch("/", Auth, validate(updateUserSchema), userUpdate);
 
-module.exports = router;
+export default router;

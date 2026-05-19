@@ -1,17 +1,17 @@
-const express = require("express");
-const { Auth } = require("../middleware/auth.middleware");
-const {
+import express from "express";
+import { Auth } from "../middleware/auth.middleware.js";
+import {
   createTodoController,
   getAllTodoController,
   getSingleTodoController,
   updateTodoController,
   deleteTodoController,
-} = require("../controllers/todo_controller");
-const { validate } = require("../middleware/schema.middleware");
-const {
+} from "../controllers/todo.controller.js";
+import { validate } from "../middleware/schema.middleware.js";
+import {
   createTodoSchema,
   updateTodoSchema,
-} = require("../schemas/todo.schema");
+} from "../schemas/todo.schema.js";
 
 const router = express.Router();
 router.post("/", Auth, validate(createTodoSchema), createTodoController);
@@ -20,4 +20,4 @@ router.get("/:id", Auth, getSingleTodoController);
 router.patch("/:id", Auth, validate(updateTodoSchema), updateTodoController);
 router.delete("/:id", Auth, deleteTodoController);
 
-module.exports = router;
+export default router;

@@ -60,10 +60,8 @@ function Registration() {
     },
 
     validate: (values) => {
+      console.log(values)
       const errors = getJoiFormErrors(registerSchema, values);
-      if (values.confirmPassword !== values.password) {
-        errors.confirmPassword = "Passwords do not match";
-      }
       return errors;
     },
   });

@@ -1,11 +1,12 @@
-const cloudinary = require("cloudinary").v2;
+import { v2 as cloudinary } from "cloudinary";
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
   api_key: process.env.CLOUDINARY_KEY,
   api_secret: process.env.CLOUDINARY_SECRET,
 });
 
-const uploadToCloudinary = async (fileBuffer) => {
+export const uploadToCloudinary = async (fileBuffer) => {
   if (!fileBuffer) return null;
 
   const base64 = `data:image/png;base64,${fileBuffer.toString("base64")}`;
@@ -17,4 +18,3 @@ const uploadToCloudinary = async (fileBuffer) => {
 
   return response.secure_url;
 };
-module.exports = { uploadToCloudinary };

@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useNavigate } from "react-router";
+import api from "./api.service";
 useNavigate;
 
 export function userRegister(userData) {
@@ -13,14 +14,14 @@ export function userRegister(userData) {
       console.log(error);
     },
     mutationFn: (userData) => {
-      return axios.post("http://localhost:3000/api/users/register", userData);
+      return api.post("http://localhost:3000/api/users/register", userData);
     },
   });
   return mutation;
 }
 export async function getUserData() {
   try {
-    const response = await axios.get("http://localhost:3000/api/users/", {
+    const response = await api.get("http://localhost:3000/api/users/", {
       withCredentials: true,
     });
     return response; // ✅ return just the data
@@ -45,7 +46,7 @@ export function userUpdate(userData) {
     },
     mutationFn: (userData) => {
       console.log(userData);
-      const data = axios.patch("http://localhost:3000/api/users/", userData, {
+      const data = api.patch("http://localhost:3000/api/users/", userData, {
         withCredentials: true,
       });
       return data;

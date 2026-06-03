@@ -1,22 +1,16 @@
 // components/ProtectedRoute.jsx
-import { useQuery } from "@tanstack/react-query";
 import { Navigate } from "react-router-dom";
-import { getUserData } from "../service/user.service";
+import { useAuth } from "../store/auth";
+import { Flex, Loader } from "@mantine/core";
 
 function AuthRoute({ children }) {
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["users"],
-    queryFn: getUserData,
-    retry: 1,
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: true,
-    refetchInterval: 1000 * 60 * 10,
-  });
+  const token = useAuth((state) => state.token);
+  
+  if (!token) {
+    return <Navigate to="/login" replace />; // 👈 redirect if no token
+  }
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError || !data) return <Navigate to="/login" replace />;
-
-  return children;
+  return children; // 👈 show page if token exists
 }
 
 export default AuthRoute;

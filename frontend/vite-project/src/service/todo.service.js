@@ -2,13 +2,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { formatDateOnly } from "../utils/date";
 import { useFilter } from "../store/filter";
+import api from "./api.service";
 
 export function todoCreate() {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (data) => {
       const formattedDate = data?.date ? formatDateOnly(data.date) : undefined;
-      const todoData = axios.post(
+      const todoData = api.post(
         "http://localhost:3000/api/todos/",
         {
           ...data,
@@ -35,7 +36,7 @@ export function todoCreate() {
 export async function getTodos(date) {
   try {
     const formattedDate = date ? formatDateOnly(date) : undefined;
-    const response = await axios.get(`http://localhost:3000/api/todos/`, {
+    const response = await api.get(`http://localhost:3000/api/todos/`, {
       params: formattedDate ? { date: formattedDate } : undefined,
       withCredentials: true,
     });
@@ -50,7 +51,7 @@ export function deleteTodo() {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (id) => {
-      return axios.delete(`http://localhost:3000/api/todos/${id}`, {
+      return api.delete(`http://localhost:3000/api/todos/${id}`, {
         withCredentials: true,
       });
     },
@@ -71,7 +72,7 @@ export function updateTodo() {
   const mutation = useMutation({
     mutationFn: (data) => {
       console.log(data);
-      return axios.patch(
+      return api.patch(
         `http://localhost:3000/api/todos/${data.id}`,
         data,
         {

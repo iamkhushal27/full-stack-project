@@ -1,5 +1,6 @@
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import api from "./api.service";
 
 export function categoryCreate() {
   const queryClient = useQueryClient();
@@ -13,7 +14,7 @@ export function categoryCreate() {
       console.log(error.response.data.errors);
     },
     mutationFn: (data) => {
-      return axios.post("http://localhost:3000/api/categories/", data, {
+      return api.post("http://localhost:3000/api/categories/", data, {
         withCredentials: true,
       });
     },
@@ -22,7 +23,7 @@ export function categoryCreate() {
 }
 export async function getCategories() {
   try {
-    const response = await axios.get(
+    const response = await api.get(
       "http://localhost:3000/api/categories/",
       {
         withCredentials: true,
@@ -47,7 +48,7 @@ export function EditCategroy() {
     },
     mutationFn: ({ id, ...data }) => {
       console.log(data, id);
-      return axios.patch(
+      return api.patch(
         `http://localhost:3000/api/categories/${id}`,
         data,
         {
@@ -62,7 +63,7 @@ export function deleteCategory() {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (id) => {
-      return axios.delete(`http://localhost:3000/api/categories/${id}`, {
+      return api.delete(`http://localhost:3000/api/categories/${id}`, {
         withCredentials: true,
       });
     },

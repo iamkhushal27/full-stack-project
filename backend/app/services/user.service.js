@@ -1,6 +1,6 @@
 import db from "../models/index.js";
-import { NotFoundError } from "../utils/error.js";
-import { hashPassword } from "../utils/passwordhashing.js";
+import { NotFoundError } from "../utils/error.util.js";
+import { hashPassword } from "../utils/passwordhashing.util.js";
 
 const User = db.User;
 

@@ -2,10 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import errorHandler from "./app/middleware/error.middleware.js";
-import userRouter from "./app/routes/user.routes.js";
-import categoryRouter from "./app/routes/category.routes.js";
-import todoRouter from "./app/routes/todo.routes.js";
-import fileUplaodRouter from "./app/routes/file.routes.js";
+import routes from "./app/routes/index.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -18,14 +15,10 @@ app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
     credentials: true,
-  })
+  }),
 );
 app.use(cookieParser());
-
-app.use("/api/users", userRouter);
-app.use("/api/categories", categoryRouter);
-app.use("/api/todos", todoRouter);
-app.use("/api/fileuploading", fileUplaodRouter);
+app.use("/api", routes);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;

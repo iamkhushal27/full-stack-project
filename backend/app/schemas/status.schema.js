@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const createStatusSchema = z.object({
   statusName: z
-    .string()
+    .string({ required_error: "Status Name is required" })
     .min(2, "Status name must be at least 2 characters")
     .max(50, "Status name too long")
     .trim(),
@@ -11,7 +11,7 @@ export const createStatusSchema = z.object({
 export const updateStatusSchema = z
   .object({
     statusName: z
-      .string()
+      .string({ required_error: "Status Name is required" })
       .min(2, "Status name must be at least 2 characters")
       .max(50, "Status name too long")
       .trim()

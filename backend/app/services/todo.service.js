@@ -1,5 +1,5 @@
 import db from "../models/index.js";
-import { NotFoundError, BadRequestError } from "../utils/error.js";
+import { NotFoundError, BadRequestError } from "../utils/error.util.js";
 
 const Todo = db.Todo;
 const Category = db.Category;

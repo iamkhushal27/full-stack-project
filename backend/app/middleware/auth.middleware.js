@@ -1,6 +1,6 @@
 import { getUserById } from "../services/user.service.js";
-import { InvalidTokenError } from "../utils/error.js";
-import { verifyToken } from "../utils/generatingToken.js";
+import { InvalidTokenError } from "../utils/error.util.js";
+import { verifyToken } from "../utils/generatingToken.util.js";
 
 export const Auth = async (req, res, next) => {
   const token = req?.cookies?.token;

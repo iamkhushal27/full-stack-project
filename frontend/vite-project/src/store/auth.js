@@ -5,13 +5,16 @@ export const useAuth = create(
   persist(
     (set) => ({
       user: null,
-      updateUser: (newUser) => set({ user: newUser }),
+      updateUser: (newUser) =>
+        set((state) => ({
+          user: { ...state.user, ...newUser }, 
+        })),
       token: "",
       updateToken: (newToken) => set({ token: newToken }),
       logout: () => set({ user: null, token: "" }),
     }),
     {
       name: "auth-storage", // key in localStorage
-    }
-  )
+    },
+  ),
 );

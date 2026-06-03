@@ -19,6 +19,7 @@ import { getUserData, userUpdate } from "../service/user.service";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useFileUpload } from "../service/file.service";
+import { useAuth } from "../store/auth";
 
 function MyAccount() {
   const [imageFile, setImageFile] = useState("");
@@ -27,6 +28,7 @@ function MyAccount() {
   const { mutate: uploadFile } = useFileUpload();
   const { mutate } = userUpdate();
   const queryClient = useQueryClient();
+  const setUser = useAuth((state) => state.updateUser);
 
   const { data, refetch } = useQuery({
     queryKey: ["user"],
@@ -91,13 +93,21 @@ function MyAccount() {
             ...changedFields,
             profile_image: response.data.url,
           });
+          setUser({ profile_image: response.data.url });
         },
         onError: (err) => {
           console.log(err);
         },
       });
     } else {
-      mutate({ ...changedFields });
+      mutate(
+        { ...changedFields },
+        {
+          onSuccess: (data) => {
+            setUser(data.data);
+          },
+        },
+      );
     }
   }
 

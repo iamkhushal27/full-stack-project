@@ -6,15 +6,11 @@ import {
   deleteCategory,
   getCategoryByName,
 } from "../services/category.service.js";
-import { BadRequestError, ConflictError } from "../utils/error.js";
+import { BadRequestError, ConflictError } from "../utils/error.util.js";
 
 export const createCategoryController = async (req, res) => {
   const userId = req.user.id;
   const { name } = req.body;
-
-  if (!name) {
-    throw new BadRequestError("Category name is required");
-  }
 
   const existingCategoryByName = await getCategoryByName({
     name,

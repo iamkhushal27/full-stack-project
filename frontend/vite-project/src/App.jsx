@@ -25,14 +25,16 @@ import { TbCategoryFilled } from "react-icons/tb";
 import { LuListTodo } from "react-icons/lu";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { BiTask } from "react-icons/bi";
-
+import { useAuth } from "./store/auth";
 
 function App() {
   const location = useLocation();
   /use for location of url /;
   const selectedDate = useFilter((state) => state.selectedDate);
   const setSelectedDate = useFilter((state) => state.setSelectedDate);
-  console.log(selectedDate);
+  const user = useAuth((state) => state.user);
+
+  
 
   const data = [
     { icon: AiOutlineDashboard, label: "Dashboard", href: "/" },
@@ -111,10 +113,7 @@ function App() {
           style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
         >
           <Flex pos="relative" bottom={40} align="center" direction="column">
-            <Avatar
-              size="xl"
-              src="https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-6.png"
-            ></Avatar>
+            <Avatar size="xl" src={user?.profile_image}></Avatar>
           </Flex>
           <Box> {items}</Box>
         </Box>

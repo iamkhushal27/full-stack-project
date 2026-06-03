@@ -5,25 +5,18 @@ import {
   updateTodo,
   deleteTodo,
 } from "../services/todo.service.js";
-import { BadRequestError } from "../utils/error.js";
+import { BadRequestError } from "../utils/error.util.js";
 import {
   parseDateOnly,
   parsePositiveInt,
   parseOptionalRelationId,
-} from "../utils/parsingFunction.js";
+} from "../utils/parsingFunction.util.js";
 
 export const createTodoController = async (req, res) => {
   const user = req.user;
 
-  const {
-    title,
-    description,
-    category,
-    priority,
-    status,
-    uploadImage,
-    date,
-  } = req.body;
+  const { title, description, category, priority, status, uploadImage, date } =
+    req.body;
 
   const categoryId = parsePositiveInt(category, "category");
   const priorityId = parseOptionalRelationId(priority, "priority");
@@ -107,10 +100,6 @@ export const updateTodoController = async (req, res) => {
     updateData.completed = completed;
   }
 
-  if (!Object.keys(updateData).length) {
-    throw new BadRequestError("Update data is required");
-  }
-
   await updateTodo(id, userId, updateData);
 
   res.status(200).json({
@@ -121,9 +110,7 @@ export const updateTodoController = async (req, res) => {
 
 export const deleteTodoController = async (req, res) => {
   const userId = req.user.id;
-  console.log(req.params.id);
   const id = parsePositiveInt(req.params.id, "todo id");
-  console.log(id);
   await deleteTodo(id, userId);
 
   res.status(200).json({

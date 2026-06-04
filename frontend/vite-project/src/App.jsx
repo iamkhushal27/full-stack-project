@@ -8,8 +8,9 @@ import {
   Avatar,
   NavLink,
   Popover,
+  Button,
 } from "@mantine/core";
-import { Outlet, useLocation, Link } from "react-router-dom";
+import { Outlet, useLocation, Link, useNavigate } from "react-router-dom";
 import { GoSearch } from "react-icons/go";
 import { IoIosNotifications, IoMdCalendar } from "react-icons/io";
 import { FaCalendarAlt } from "react-icons/fa";
@@ -25,14 +26,17 @@ import { TbCategoryFilled } from "react-icons/tb";
 import { LuListTodo } from "react-icons/lu";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { BiTask } from "react-icons/bi";
-
+import { useAuth } from "./store/auth";
+import { IoIosLogOut } from "react-icons/io";
 
 function App() {
   const location = useLocation();
+  const navigate = useNavigate();
   /use for location of url /;
   const selectedDate = useFilter((state) => state.selectedDate);
   const setSelectedDate = useFilter((state) => state.setSelectedDate);
-  console.log(selectedDate);
+  const user = useAuth((state) => state.user);
+  const logout = useAuth((state) => state.logout);
 
   const data = [
     { icon: AiOutlineDashboard, label: "Dashboard", href: "/" },
@@ -98,6 +102,15 @@ function App() {
               <Text>tuesday</Text>
               <Text>{selectedDate}</Text>
             </Flex>
+            <IconBox
+              size={38}
+              MyIcon={IoIosLogOut}
+              myFunction={() => {
+                logout();
+                navigate("/login");
+              }}
+              backgroundColor={"red"}
+            />
           </Flex>
         </Flex>
       </Box>
@@ -111,10 +124,7 @@ function App() {
           style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
         >
           <Flex pos="relative" bottom={40} align="center" direction="column">
-            <Avatar
-              size="xl"
-              src="https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-6.png"
-            ></Avatar>
+            <Avatar size="xl" src={user?.profile_image}></Avatar>
           </Flex>
           <Box> {items}</Box>
         </Box>

@@ -6,17 +6,11 @@ import {
   deletePriority,
   getPriorityByName,
 } from "../services/priority.service.js";
-import { BadRequestError, ConflictError } from "../utils/error.js";
+import { BadRequestError, ConflictError } from "../utils/error.util.js";
 
 export const createPriorityController = async (req, res) => {
   const { categoryId } = req.params;
   const { priorityName } = req.body;
-  console.log(req.body);
-  console.log(categoryId);
-
-  if (!priorityName) {
-    throw new BadRequestError("Priority name is required");
-  }
 
   const existingPriorityByName = await getPriorityByName({
     priorityName,
@@ -25,7 +19,7 @@ export const createPriorityController = async (req, res) => {
   if (existingPriorityByName) {
     throw new ConflictError("Priority name already exists");
   }
-  console.log(priorityName, "iwie");
+
   const priority = await createPriority({
     priorityName,
     category_id: categoryId,
@@ -64,10 +58,6 @@ export const updatePriorityController = async (req, res) => {
   const { categoryId, id } = req.params;
   const data = req.body;
 
-  if (!Object.keys(data).length) {
-    throw new BadRequestError("Update data is required");
-  }
-
   if (data.priorityName) {
     const existingPriorityByName = await getPriorityByName({
       priorityName: data.priorityName,
@@ -82,9 +72,7 @@ export const updatePriorityController = async (req, res) => {
     }
   }
 
-  const prioirty = await updatePriority(id, categoryId, data);
-  console.log(prioirty);
-
+  await updatePriority(id, categoryId, data);
   res.status(200).json({
     status: "success",
     message: "Priority updated successfully",

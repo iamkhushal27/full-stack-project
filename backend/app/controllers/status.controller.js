@@ -6,15 +6,13 @@ import {
   deleteStatus,
   getStatusByName,
 } from "../services/status.service.js";
-import { BadRequestError, ConflictError } from "../utils/error.js";
+import { BadRequestError, ConflictError } from "../utils/error.util.js";
 
 export const createStatusController = async (req, res) => {
   const { categoryId } = req.params;
   const { statusName } = req.body;
 
-  if (!statusName) {
-    throw new BadRequestError("Status name is required");
-  }
+ 
 
   const existingStatusByName = await getStatusByName({
     statusName,
@@ -58,10 +56,6 @@ export const getSingleStatusController = async (req, res) => {
 export const updateStatusController = async (req, res) => {
   const { categoryId, id } = req.params;
   const data = req.body;
-
-  if (!Object.keys(data).length) {
-    throw new BadRequestError("Update data is required");
-  }
 
   if (data.statusName) {
     const existingStatusByName = await getStatusByName({

@@ -1,5 +1,6 @@
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import api from "./api.service";
 
 export function statusCreate() {
   const queryClient = useQueryClient();
@@ -13,7 +14,7 @@ export function statusCreate() {
       console.log(error);
     },
     mutationFn: ({ parentId: categoryId, ...data }) => {
-      return axios.post(
+      return api.post(
         `http://localhost:3000/api/categories/${categoryId}/status`,
         data,
         {
@@ -27,7 +28,7 @@ export function statusCreate() {
 
 export async function getStatuses(categoryId) {
   try {
-    const response = await axios.get(
+    const response = await api.get(
       `http://localhost:3000/api/categories/${categoryId}/status`,
       {
         withCredentials: true,
@@ -53,7 +54,7 @@ export function editStatus() {
       console.log(error);
     },
     mutationFn: ({ id, parentId: categoryId, ...data }) => {
-      return axios.patch(
+      return api.patch(
         `http://localhost:3000/api/categories/${categoryId}/status/${id}`,
         data,
         {
@@ -69,7 +70,7 @@ export function deleteStatus() {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: ({ id, parentId: categoryId }) => {
-      return axios.delete(
+      return api.delete(
         `http://localhost:3000/api/categories/${categoryId}/status/${id}`,
         {
           withCredentials: true,

@@ -10,7 +10,6 @@ import SingleCategory from "./pages/singleCategory";
 import AuthRoute from "./components/protectedRoute";
 import StoreMy from "./pages/store";
 
-
 const router = createBrowserRouter([
   {
     path: "/",

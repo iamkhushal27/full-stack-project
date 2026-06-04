@@ -7,8 +7,8 @@ import {
   updateCategoryController,
   deleteCategoryController,
 } from "../controllers/category.controller.js";
-import statusRouter from "./status.routes.js";
-import priorityRouter from "./priority.routes.js";
+import statusRouter from "./status.route.js";
+import priorityRouter from "./priority.route.js";
 import { validate } from "../middleware/schema.middleware.js";
 import {
   createCategorySchema,

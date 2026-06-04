@@ -1,5 +1,5 @@
 import db from "../models/index.js";
-import { NotFoundError } from "../utils/error.js";
+import { NotFoundError } from "../utils/error.util.js";
 
 const Status = db.Status;
 

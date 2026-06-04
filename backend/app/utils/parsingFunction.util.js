@@ -1,4 +1,4 @@
-import { BadRequestError } from "./error.js";
+import { BadRequestError } from "./error.util.js";
 
 export const parsePositiveInt = (value, fieldName) => {
   const parsedValue = Number(value);

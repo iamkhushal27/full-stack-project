@@ -5,12 +5,13 @@ import {
   getUserById,
   updateUser,
 } from "../services/user.service.js";
-import { ConflictError, UnauthorizedError } from "../utils/error.js";
-import { generateToken } from "../utils/generatingToken.js";
-import { verifyPassword } from "../utils/passwordhashing.js";
+import { ConflictError, UnauthorizedError } from "../utils/error.util.js";
+import { generateToken } from "../utils/generatingToken.util.js";
+import { verifyPassword } from "../utils/passwordhashing.util.js";
 
 export const userRegister = async (req, res) => {
   const { name, email, password } = req.body;
+  console.log(name, email, password);
 
   const existingUserByEmail = await findUserByEmail(email);
   if (existingUserByEmail) {
@@ -38,18 +39,12 @@ export const userLogin = async (req, res) => {
   await verifyPassword(password, existingUserByEmail.password);
   const token = await generateToken(existingUserByEmail?.id);
 
-  res
-    .status(200)
-    .cookie("token", token, {
-      httpOnly: true,
-      secure: false,
-    })
-    .json({
-      status: "success",
-      data: existingUserByEmail,
-      token,
-      message: "Login successful",
-    });
+  res.status(200).json({
+    status: "success",
+    data: existingUserByEmail,
+    token,
+    message: "Login successful",
+  });
 };
 
 export const userSingle = async (req, res) => {

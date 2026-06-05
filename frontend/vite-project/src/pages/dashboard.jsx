@@ -75,16 +75,14 @@ function Dashboard() {
             py="lg"
             style={{ overflowY: "auto" }}
           >
-            {todoData?.data?.length > 0 ? (
-              todoData.data
-                .filter((data) => !data.completed) // ✅ filter first
-                .map((data) => (
-                  <TodoChip key={data.id} data={data} /> // ✅ add key
-                ))
-            ) : (
+            {todoData?.data?.filter(data => !data.completed).length === 0 ? (
               <Center>
-                <Text>No task to show</Text>
+                <Text>No pending tasks to show</Text>
               </Center>
+            ) : (
+              todoData?.data
+                ?.filter(data => !data.completed)
+                .map(data => <TodoChip key={data.id} data={data} />)
             )}
           </Flex>
         </Box>
@@ -96,16 +94,24 @@ function Dashboard() {
             bdrs="md"
           >
             {" "}
-            <Flex h="100%" w="100%" justify="space-evenly">
-              <DonutChart
-                h="70%"
-                w="40%"
-                miw="150"
-                thickness={20}
-                data={data}
-                withLabelsLine
-                labelsType="percent"
-              />
+            <Flex h="100%" w="100%" justify="space-evenly">{
+              todoData?.data?.length > 0 ? (
+                <DonutChart
+                  h="70%"
+                  w="40%"
+                  miw="150"
+                  thickness={20}
+                  data={data}
+                  withLabelsLine
+                  labelsType="percent"
+                />
+              ) : (
+                <Center>
+                  <Text>No Task is created yet</Text>
+                </Center>
+              )}
+
+
             </Flex>
           </Box>
           <Box
@@ -115,13 +121,17 @@ function Dashboard() {
             bdrs="md"
             p="lg"
           >
+
             <Stack style={{ overflowY: "auto" }} gap="md" h="100%" w="100%">
-              <Text>Task completed</Text>
-              {todoData?.data?.map((data) => {
-                if (data.completed) {
-                  return <TodoChip data={data} />;
-                }
-              })}
+              {todoData?.data?.filter(data => data.completed).length === 0 ? (
+                <Center>
+                  <Text>No completed tasks to show</Text>
+                </Center>
+              ) : (
+                todoData?.data
+                  ?.filter(data => data.completed)
+                  .map(data => <TodoChip key={data.id} data={data} />)
+              )}
             </Stack>
           </Box>
         </Stack>

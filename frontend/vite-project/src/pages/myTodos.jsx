@@ -1,4 +1,4 @@
-import { Avatar, Box, Divider, Flex, Paper, Stack, Text } from "@mantine/core";
+import { Avatar, Box, Center, Divider, Flex, Paper, Stack, Text } from "@mantine/core";
 import { GoFileZip } from "react-icons/go";
 import { HiDotsHorizontal } from "react-icons/hi";
 import TodoChip from "../components/todochip";
@@ -53,9 +53,12 @@ function MyTodos() {
             py="lg"
             style={{ overflowY: "auto" }}
           >
-            {todoData?.data?.map((data) => {
-              return <TodoChip setData={setData} data={data} />;
-            })}
+
+            {todoData?.data?.length === 0 ? <Center><Text>No tasks is created today</Text></Center> :
+              todoData?.data?.map((data) => {
+                console.log(data)
+                return data ? <TodoChip setData={setData} data={data} /> : <Center><Text>No tasks to show</Text></Center>
+              })}
           </Flex>
         </Box>
         <Box

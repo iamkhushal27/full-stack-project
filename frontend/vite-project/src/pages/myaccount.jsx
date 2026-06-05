@@ -141,7 +141,7 @@ function MyAccount() {
             </Flex>
 
             <Box
-              h="65%"
+              h="75%"
               w="98%"
               p="lg"
               shadow="xl"
@@ -153,7 +153,7 @@ function MyAccount() {
             >
               {" "}
               <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
-                <Stack mt="xl" mx="lg" w="50%">
+                <Stack mt="sm" mx="lg" w="50%">
                   <TextInput
                     label="Name"
                     placeholder="Enter name"
@@ -207,7 +207,7 @@ function MyAccount() {
                     }}
                   />
 
-                  <Flex gap={4} mt="lg">
+                  <Flex gap={4} mt="sm">
                     <Button bg="#F24E1E" w="40%" radius="6" type="submit">
                       Save changes
                     </Button>

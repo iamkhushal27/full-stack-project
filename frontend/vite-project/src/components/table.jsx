@@ -1,7 +1,7 @@
 import { Table } from "@mantine/core";
 
 function MyTable({ data = [], columns, labels = {}, h }) {
-  if (!data.length) return <p>No data</p>;
+  if (!data.length) return <p>No data to show</p>;
 
   const rows = data.map((row, index) => {
     return (
@@ -30,7 +30,7 @@ function MyTable({ data = [], columns, labels = {}, h }) {
         withRowBorders={false}
         bd="1px solid #A1A3AB"
         styles={{
-          
+
           thead: { borderBottom: "1px solid #A1A3AB" },
           th: {
             fontWeight: 600,
@@ -39,7 +39,7 @@ function MyTable({ data = [], columns, labels = {}, h }) {
           },
           td: { textAlign: "center", borderRight: "1px solid #A1A3AB" },
         }}
-      
+
       >
         <Table.Thead>
           <Table.Tr>

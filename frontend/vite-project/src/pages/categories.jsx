@@ -17,6 +17,7 @@ import {
   Image,
   Grid,
   Menu,
+  Center,
 } from "@mantine/core";
 import { HiDotsHorizontal } from "react-icons/hi";
 import { useForm } from "@mantine/form";
@@ -41,7 +42,7 @@ import {
 import { getJoiFormErrors } from "../utils/joiValidate";
 
 function Category() {
-  
+
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [opened, { open, close }] = useDisclosure(false);
   const [
@@ -101,7 +102,8 @@ function Category() {
               </Button>
             </Flex>
             <Grid>
-              {categoryData?.data?.map((data) => {
+
+              {categoryData?.data?.length === 0 ? <Center><Text>No category is created yet</Text></Center> : categoryData?.data?.map((data) => {
                 return (
                   <Grid.Col span={4}>
                     <Card shadow="lg" padding="lg">

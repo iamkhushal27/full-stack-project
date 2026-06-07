@@ -44,6 +44,11 @@ function App() {
     { icon: BiTask, label: "My Todos", href: "/mytodos" },
     { icon: TbCategoryFilled, label: "Categories", href: "/categories" },
     { icon: MdAccountCircle, label: "My Account", href: "/myaccount" },
+    {
+      icon: MdAccountCircle,
+      label: "PracticeDasboard",
+      href: "/practicedashboard",
+    },
   ];
   const items = data.map((item, index) => (
     <NavLink

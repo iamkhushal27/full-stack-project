@@ -7,7 +7,7 @@ export const useAuth = create(
       user: null,
       updateUser: (newUser) =>
         set((state) => ({
-          user: { ...state.user, ...newUser }, 
+          user: { ...state.user, ...newUser },
         })),
       token: "",
       updateToken: (newToken) => set({ token: newToken }),

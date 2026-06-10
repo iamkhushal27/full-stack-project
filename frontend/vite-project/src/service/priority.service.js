@@ -14,13 +14,9 @@ export function priorityCreate() {
       console.log(error);
     },
     mutationFn: ({ parentId: categoryId, ...data }) => {
-      return api.post(
-        `http://localhost:3000/api/categories/${categoryId}/priority`,
-        data,
-        {
-          withCredentials: true,
-        }
-      );
+      return api.post(`/categories/${categoryId}/priority`, data, {
+        withCredentials: true,
+      });
     },
   });
   return mutation;
@@ -28,12 +24,9 @@ export function priorityCreate() {
 
 export async function getPriorities(categoryId) {
   try {
-    const response = await api.get(
-      `http://localhost:3000/api/categories/${categoryId}/priority`,
-      {
-        withCredentials: true,
-      }
-    );
+    const response = await api.get(`/categories/${categoryId}/priority`, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
     const message =
@@ -54,13 +47,9 @@ export function editPriority() {
       console.log(error);
     },
     mutationFn: ({ id, parentId: categoryId, ...data }) => {
-      return api.patch(
-        `http://localhost:3000/api/categories/${categoryId}/priority/${id}`,
-        data,
-        {
-          withCredentials: true,
-        }
-      );
+      return api.patch(`/categories/${categoryId}/priority/${id}`, data, {
+        withCredentials: true,
+      });
     },
   });
   return mutation;
@@ -70,12 +59,9 @@ export function deletePriority() {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: ({ id, parentId: categoryId }) => {
-      return api.delete(
-        `http://localhost:3000/api/categories/${categoryId}/priority/${id}`,
-        {
-          withCredentials: true,
-        }
-      );
+      return api.delete(`/categories/${categoryId}/priority/${id}`, {
+        withCredentials: true,
+      });
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({

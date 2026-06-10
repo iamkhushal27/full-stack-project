@@ -10,14 +10,14 @@ export function todoCreate() {
     mutationFn: (data) => {
       const formattedDate = data?.date ? formatDateOnly(data.date) : undefined;
       const todoData = api.post(
-        "http://localhost:3000/api/todos/",
+        "/todos/",
         {
           ...data,
           date: formattedDate,
         },
         {
           withCredentials: true,
-        }
+        },
       );
       return todoData;
     },
@@ -36,7 +36,7 @@ export function todoCreate() {
 export async function getTodos(date) {
   try {
     const formattedDate = date ? formatDateOnly(date) : undefined;
-    const response = await api.get(`http://localhost:3000/api/todos/`, {
+    const response = await api.get(`/todos/`, {
       params: formattedDate ? { date: formattedDate } : undefined,
       withCredentials: true,
     });
@@ -51,7 +51,7 @@ export function deleteTodo() {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (id) => {
-      return api.delete(`http://localhost:3000/api/todos/${id}`, {
+      return api.delete(`/todos/${id}`, {
         withCredentials: true,
       });
     },
@@ -72,13 +72,9 @@ export function updateTodo() {
   const mutation = useMutation({
     mutationFn: (data) => {
       console.log(data);
-      return api.patch(
-        `http://localhost:3000/api/todos/${data.id}`,
-        data,
-        {
-          withCredentials: true,
-        }
-      );
+      return api.patch(`/todos/${data.id}`, data, {
+        withCredentials: true,
+      });
     },
     onSuccess: (_, todoId) => {
       const selectedDate = useFilter.getState().selectedDate;

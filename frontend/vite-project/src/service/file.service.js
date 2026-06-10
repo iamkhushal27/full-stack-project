@@ -2,9 +2,9 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import api from "./api.service";
 
- const uploadFile = (userData) => {
+const uploadFile = (userData) => {
   console.log(userData);
-  return api.post("http://localhost:3000/api/fileuploading/", userData, {
+  return api.post("/fileuploading/", userData, {
     withCredentials: true,
     headers: {
       "Content-Type": "multipart/form-data", // ✅ tell backend its a file

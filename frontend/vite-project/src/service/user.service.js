@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import api from "./api.service";
 useNavigate;
 
-export function userRegister(userData) {
+export function userRegister() {
   const navigate = useNavigate();
   const mutation = useMutation({
     onSuccess: (data) => {
@@ -13,8 +13,12 @@ export function userRegister(userData) {
     onError: (error) => {
       console.log(error);
     },
-    mutationFn: (userData) => {
-      return api.post("/users/register", userData);
+    mutationFn: ({ idempotencyKey, ...data }) => {
+      return api.post("/users/register", data, {
+        headers: {
+          Idempotency_Key: idempotencyKey, // ← send as header
+        },
+      });
     },
   });
   return mutation;

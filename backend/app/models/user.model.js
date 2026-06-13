@@ -9,7 +9,8 @@ export default (sequelize, DataTypes) => {
         allowNull: false,
       },
 
-      profile_image: {        // ✅ snake_case
+      profile_image: {
+        // ✅ snake_case
         type: DataTypes.STRING,
         allowNull: true,
       },
@@ -22,10 +23,14 @@ export default (sequelize, DataTypes) => {
       email: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
         validate: {
           isEmail: true,
         },
+      },
+      idempotency_key: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
       },
 
       password: {
@@ -36,8 +41,8 @@ export default (sequelize, DataTypes) => {
     {
       tableName: "users",
       timestamps: true, // Sequelize handles createdAt & updatedAt
-      underscored: true, 
-    }
+      underscored: true,
+    },
   );
 
   // 🔗 Associations

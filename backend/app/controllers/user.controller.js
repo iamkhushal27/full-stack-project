@@ -8,20 +8,26 @@ import {
 import { ConflictError, UnauthorizedError } from "../utils/error.util.js";
 import { generateToken } from "../utils/generatingToken.util.js";
 import { verifyPassword } from "../utils/passwordhashing.util.js";
+import { withTransaction } from "../utils/transaction.util.js";
 
 export const userRegister = async (req, res) => {
   const { name, email, password } = req.body;
-  console.log(name, email, password);
+  const idempotency_key = req.headers.idempotency_key;
 
-  const existingUserByEmail = await findUserByEmail(email);
-  if (existingUserByEmail) {
-    throw new ConflictError("Email already exists");
-  }
-  const existingUserByUserName = await findUserByUsername(name);
-  if (existingUserByUserName) {
-    throw new ConflictError("UserName already exists");
-  }
-  const user = await createUser({ name, email, password });
+  const user = await withTransaction(async (transaction) => {
+    const existingUserByEmail = await findUserByEmail(email, { transaction });
+    if (existingUserByEmail) {
+      throw new ConflictError("Email already exists");
+    }
+
+    const existingUserByUserName = await findUserByUsername(name, { transaction });
+    if (existingUserByUserName) {
+      throw new ConflictError("UserName already exists");
+    }
+
+    return createUser({ name, email, password, idempotency_key }, { transaction });
+  });
+
   res.status(201).json({
     status: "success",
     message: "User registered successfully",
@@ -55,7 +61,11 @@ export const userSingle = async (req, res) => {
 export const userUpdate = async (req, res) => {
   const user = req.user;
   const data = req.body;
-  await updateUser(user.id, data);
-  const updatedUser = await getUserById(user);
+
+  const updatedUser = await withTransaction(async (transaction) => {
+    await updateUser(user.id, data, { transaction });
+    return getUserById(user, { transaction });
+  });
+
   res.status(201).json(updatedUser);
 };

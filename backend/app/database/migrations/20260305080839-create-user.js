@@ -25,6 +25,10 @@ export default {
       email: {
         type: Sequelize.STRING,
         allowNull: false,
+      },
+      idempotency_key: {
+        type: Sequelize.STRING,
+        allowNull: false,
         unique: true,
       },
 

@@ -1,13 +1,17 @@
 import api from "./api.service";
 
 export const useLogout = () => {
-    const navigate = useNavigate();
-  
-    return async () => {
-      await api.post("http://localhost:3000/api/users/logout", {}, {
+  const navigate = useNavigate();
+
+  return async () => {
+    await api.post(
+      "/users/logout",
+      {},
+      {
         withCredentials: true, // ✅ clears the cookie on backend
-      });
-      localStorage.removeItem("isLoggedIn");
-      navigate("/login");
-    };
+      },
+    );
+    localStorage.removeItem("isLoggedIn");
+    navigate("/login");
   };
+};

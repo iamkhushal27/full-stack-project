@@ -7,19 +7,23 @@ import {
   getCategoryByName,
 } from "../services/category.service.js";
 import { BadRequestError, ConflictError } from "../utils/error.util.js";
+import { withTransaction } from "../utils/transaction.util.js";
 
 export const createCategoryController = async (req, res) => {
   const userId = req.user.id;
   const { name } = req.body;
 
-  const existingCategoryByName = await getCategoryByName({
-    name,
-    user_id: userId,
+  const category = await withTransaction(async (transaction) => {
+    const existingCategoryByName = await getCategoryByName(
+      { name, user_id: userId },
+      { transaction },
+    );
+    if (existingCategoryByName) {
+      throw new ConflictError("Category Name alredy exists");
+    }
+
+    return createCategory({ name, user_id: userId }, { transaction });
   });
-  if (existingCategoryByName) {
-    throw new ConflictError("Category Name alredy exists");
-  }
-  const category = await createCategory({ name, user_id: userId });
 
   res.status(201).json({
     status: "success",
@@ -55,19 +59,22 @@ export const updateCategoryController = async (req, res) => {
   const userId = req.user.id;
   const { id } = req.params;
   const data = req.body;
-  console.log(id, data);
 
   if (!Object.keys(data).length) {
     throw new BadRequestError("Update data is required");
   }
-  const existingCategoryByName = await getCategoryByName({
-    name: data.name,
-    user_id: userId,
+
+  const category = await withTransaction(async (transaction) => {
+    const existingCategoryByName = await getCategoryByName(
+      { name: data.name, user_id: userId },
+      { transaction },
+    );
+    if (existingCategoryByName) {
+      throw new ConflictError("Category Name alredy exists");
+    }
+
+    return updateCategory(id, userId, data, { transaction });
   });
-  if (existingCategoryByName) {
-    throw new ConflictError("Category Name alredy exists");
-  }
-  const category = await updateCategory(id, userId, data);
 
   res.status(200).json({
     status: "success",
@@ -79,7 +86,10 @@ export const updateCategoryController = async (req, res) => {
 export const deleteCategoryController = async (req, res) => {
   const userId = req.user.id;
   const { id } = req.params;
-  await deleteCategory(id, userId);
+
+  await withTransaction(async (transaction) => {
+    await deleteCategory(id, userId, { transaction });
+  });
 
   res.status(200).json({
     status: "success",

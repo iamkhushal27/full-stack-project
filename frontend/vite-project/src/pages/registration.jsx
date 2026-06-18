@@ -16,8 +16,12 @@ import background from "../assets/background.png";
 import { userRegister } from "../service/user.service";
 import { registerSchema } from "../schemas/user.schema";
 import { getJoiFormErrors } from "../utils/joiValidate";
+import { v4 as uuidv4 } from "uuid";
+import { useState } from "react";
 
 function Registration() {
+  const [idempotencyKey] = useState(() => uuidv4());
+
   const {
     mutate: registerUser,
     isPending,
@@ -27,27 +31,34 @@ function Registration() {
 
   const handleRegister = (data) => {
     console.log(data);
-    registerUser(data, {
-      onError: (error) => {
-        const errors = error.response?.data?.errors || [];
-        if (errors.length > 0) {
-          // ✅ validation errors from Zod
-          errors.forEach((err) => {
-            form.setFieldError(err.field, err.message);
-          });
-        } else {
-          // ✅ conflict errors like "Email already exists"
-          const message = error.response?.data?.message || "Something went wrong";
-          if (message.toLowerCase().includes("email")) {
-            form.setFieldError("email", message);
-          } else if (message.toLowerCase().includes("username") || message.toLowerCase().includes("name")) {
-            form.setFieldError("name", message);
+    registerUser(
+      { ...data, idempotencyKey },
+      {
+        onError: (error) => {
+          const errors = error.response?.data?.errors || [];
+          if (errors.length > 0) {
+            // ✅ validation errors from Zod
+            errors.forEach((err) => {
+              form.setFieldError(err.field, err.message);
+            });
           } else {
-            form.setFieldError("email", message); // fallback
+            // ✅ conflict errors like "Email already exists"
+            const message =
+              error.response?.data?.message || "Something went wrong";
+            if (message.toLowerCase().includes("email")) {
+              form.setFieldError("email", message);
+            } else if (
+              message.toLowerCase().includes("username") ||
+              message.toLowerCase().includes("name")
+            ) {
+              form.setFieldError("name", message);
+            } else {
+              form.setFieldError("email", message); // fallback
+            }
           }
-        }
+        },
       },
-    });
+    );
   };
 
   const form = useForm({
@@ -60,14 +71,11 @@ function Registration() {
     },
 
     validate: (values) => {
-      console.log(values)
+      console.log(values);
       const errors = getJoiFormErrors(registerSchema, values);
       return errors;
     },
   });
-  if (isPending) {
-    return <div>loading...</div>;
-  }
 
   return (
     <Box

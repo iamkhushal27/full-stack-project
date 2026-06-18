@@ -21,7 +21,7 @@ export function userLogin(userData) {
     },
     mutationFn: (userData) => {
       console.log(userData);
-      return api.post("http://localhost:3000/api/users/login", userData, {
+      return api.post("/users/login", userData, {
         withCredentials: true, // <-- important
       });
     },

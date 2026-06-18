@@ -24,7 +24,7 @@ const todoInclude = [
   },
 ];
 
-export async function getAllTodos(user_id, date) {
+export async function getAllTodos(user_id, date, { transaction } = {}) {
   const where = { user_id };
   if (date) {
     where.date = date;
@@ -34,14 +34,16 @@ export async function getAllTodos(user_id, date) {
     where,
     include: todoInclude,
     order: [["id", "DESC"]],
+    transaction,
   });
   return todos;
 }
 
-export async function getSingleTodo(id, user_id) {
+export async function getSingleTodo(id, user_id, { transaction } = {}) {
   const todo = await Todo.findOne({
     where: { id, user_id },
     include: todoInclude,
+    transaction,
   });
   if (!todo) {
     throw new NotFoundError("Todo not found");
@@ -49,18 +51,22 @@ export async function getSingleTodo(id, user_id) {
   return todo;
 }
 
-export async function createTodo({
-  title,
-  description,
-  task_image,
-  date,
-  user_id,
-  category_id,
-  priority_id,
-  status_id,
-}) {
+export async function createTodo(
+  {
+    title,
+    description,
+    task_image,
+    date,
+    user_id,
+    category_id,
+    priority_id,
+    status_id,
+  },
+  { transaction } = {},
+) {
   const category = await Category.findOne({
     where: { id: category_id, user_id },
+    transaction,
   });
   if (!category) {
     throw new BadRequestError("Invalid category for this user");
@@ -69,6 +75,7 @@ export async function createTodo({
   if (priority_id) {
     const priority = await Priority.findOne({
       where: { id: priority_id, category_id },
+      transaction,
     });
     if (!priority) {
       throw new BadRequestError("Invalid priority for selected category");
@@ -78,30 +85,34 @@ export async function createTodo({
   if (status_id) {
     const status = await Status.findOne({
       where: { id: status_id, category_id },
+      transaction,
     });
     if (!status) {
       throw new BadRequestError("Invalid status for selected category");
     }
   }
 
-  const todo = await Todo.create({
-    title,
-    description,
-    task_image,
-    date,
-    user_id,
-    category_id,
-    priority_id,
-    status_id,
-  });
+  const todo = await Todo.create(
+    {
+      title,
+      description,
+      task_image,
+      date,
+      user_id,
+      category_id,
+      priority_id,
+      status_id,
+    },
+    { transaction },
+  );
 
   return todo;
 }
 
-export async function updateTodo(id, user_id, data) {
-  console.log(data);
+export async function updateTodo(id, user_id, data, { transaction } = {}) {
   const todo = await Todo.findOne({
     where: { id, user_id },
+    transaction,
   });
   if (!todo) {
     throw new NotFoundError("Todo not found");
@@ -113,6 +124,7 @@ export async function updateTodo(id, user_id, data) {
   if (data.category_id !== undefined) {
     const category = await Category.findOne({
       where: { id: data.category_id, user_id },
+      transaction,
     });
     if (!category) {
       throw new BadRequestError("Invalid category for this user");
@@ -122,6 +134,7 @@ export async function updateTodo(id, user_id, data) {
   if (data.priority_id !== undefined && data.priority_id !== null) {
     const priority = await Priority.findOne({
       where: { id: data.priority_id, category_id: nextCategoryId },
+      transaction,
     });
     if (!priority) {
       throw new BadRequestError("Invalid priority for selected category");
@@ -131,21 +144,23 @@ export async function updateTodo(id, user_id, data) {
   if (data.status_id !== undefined && data.status_id !== null) {
     const status = await Status.findOne({
       where: { id: data.status_id, category_id: nextCategoryId },
+      transaction,
     });
     if (!status) {
       throw new BadRequestError("Invalid status for selected category");
     }
   }
 
-  await todo.update(data);
+  await todo.update(data, { transaction });
 }
 
-export async function deleteTodo(id, user_id) {
+export async function deleteTodo(id, user_id, { transaction } = {}) {
   const todo = await Todo.findOne({
     where: { id, user_id },
+    transaction,
   });
   if (!todo) {
     throw new NotFoundError("Todo not found");
   }
-  await todo.destroy();
+  await todo.destroy({ transaction });
 }

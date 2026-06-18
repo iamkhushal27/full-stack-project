@@ -10,11 +10,11 @@ export function categoryCreate() {
       console.log(data);
     },
     onError: (error) => {
-      console.log(error.response.data);         // ✅ clean — no http:// links
+      console.log(error.response.data); // ✅ clean — no http:// links
       console.log(error.response.data.errors);
     },
     mutationFn: (data) => {
-      return api.post("http://localhost:3000/api/categories/", data, {
+      return api.post("/categories/", data, {
         withCredentials: true,
       });
     },
@@ -23,12 +23,9 @@ export function categoryCreate() {
 }
 export async function getCategories() {
   try {
-    const response = await api.get(
-      "http://localhost:3000/api/categories/",
-      {
-        withCredentials: true,
-      }
-    );
+    const response = await api.get("/categories/", {
+      withCredentials: true,
+    });
     return response.data; // ✅ return just the data
   } catch (error) {
     const message =
@@ -48,13 +45,9 @@ export function EditCategroy() {
     },
     mutationFn: ({ id, ...data }) => {
       console.log(data, id);
-      return api.patch(
-        `http://localhost:3000/api/categories/${id}`,
-        data,
-        {
-          withCredentials: true,
-        }
-      );
+      return api.patch(`/categories/${id}`, data, {
+        withCredentials: true,
+      });
     },
   });
   return mutation;
@@ -63,7 +56,7 @@ export function deleteCategory() {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (id) => {
-      return api.delete(`http://localhost:3000/api/categories/${id}`, {
+      return api.delete(`/categories/${id}`, {
         withCredentials: true,
       });
     },

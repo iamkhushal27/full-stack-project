@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import api from "./api.service";
 useNavigate;
 
-export function userRegister(userData) {
+export function userRegister() {
   const navigate = useNavigate();
   const mutation = useMutation({
     onSuccess: (data) => {
@@ -13,15 +13,19 @@ export function userRegister(userData) {
     onError: (error) => {
       console.log(error);
     },
-    mutationFn: (userData) => {
-      return api.post("http://localhost:3000/api/users/register", userData);
+    mutationFn: ({ idempotencyKey, ...data }) => {
+      return api.post("/users/register", data, {
+        headers: {
+          Idempotency_Key: idempotencyKey, // ← send as header
+        },
+      });
     },
   });
   return mutation;
 }
 export async function getUserData() {
   try {
-    const response = await api.get("http://localhost:3000/api/users/", {
+    const response = await api.get("/users/", {
       withCredentials: true,
     });
     return response; // ✅ return just the data
@@ -46,7 +50,7 @@ export function userUpdate(userData) {
     },
     mutationFn: (userData) => {
       console.log(userData);
-      const data = api.patch("http://localhost:3000/api/users/", userData, {
+      const data = api.patch("/users/", userData, {
         withCredentials: true,
       });
       return data;

@@ -6,23 +6,24 @@ import {
   deleteStatus,
   getStatusByName,
 } from "../services/status.service.js";
-import { BadRequestError, ConflictError } from "../utils/error.util.js";
+import { ConflictError } from "../utils/error.util.js";
+import { withTransaction } from "../utils/transaction.util.js";
 
 export const createStatusController = async (req, res) => {
   const { categoryId } = req.params;
   const { statusName } = req.body;
 
- 
+  const status = await withTransaction(async (transaction) => {
+    const existingStatusByName = await getStatusByName(
+      { statusName, category_id: categoryId },
+      { transaction },
+    );
+    if (existingStatusByName) {
+      throw new ConflictError("Status name already exists");
+    }
 
-  const existingStatusByName = await getStatusByName({
-    statusName,
-    category_id: categoryId,
+    return createStatus({ statusName, category_id: categoryId }, { transaction });
   });
-  if (existingStatusByName) {
-    throw new ConflictError("Status name already exists");
-  }
-
-  const status = await createStatus({ statusName, category_id: categoryId });
 
   res.status(201).json({
     status: "success",
@@ -57,31 +58,35 @@ export const updateStatusController = async (req, res) => {
   const { categoryId, id } = req.params;
   const data = req.body;
 
-  if (data.statusName) {
-    const existingStatusByName = await getStatusByName({
-      statusName: data.statusName,
-      category_id: categoryId,
-    });
-    if (
-      existingStatusByName &&
-      Number(existingStatusByName.id) !== Number(id)
-    ) {
-      throw new ConflictError("Status name already exists");
+  await withTransaction(async (transaction) => {
+    if (data.statusName) {
+      const existingStatusByName = await getStatusByName(
+        { statusName: data.statusName, category_id: categoryId },
+        { transaction },
+      );
+      if (
+        existingStatusByName &&
+        Number(existingStatusByName.id) !== Number(id)
+      ) {
+        throw new ConflictError("Status name already exists");
+      }
     }
-  }
 
-  const status = await updateStatus(id, categoryId, data);
+    await updateStatus(id, categoryId, data, { transaction });
+  });
 
   res.status(200).json({
     status: "success",
     message: "Status updated successfully",
-    data: status,
   });
 };
 
 export const deleteStatusController = async (req, res) => {
   const { categoryId, id } = req.params;
-  await deleteStatus(id, categoryId);
+
+  await withTransaction(async (transaction) => {
+    await deleteStatus(id, categoryId, { transaction });
+  });
 
   res.status(200).json({
     status: "success",

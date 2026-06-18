@@ -9,6 +9,7 @@ import Category from "./pages/categories";
 import SingleCategory from "./pages/singleCategory";
 import AuthRoute from "./components/protectedRoute";
 import StoreMy from "./pages/store";
+import PracticeDashboard from "./pages/practicedashboard";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,7 @@ const router = createBrowserRouter([
   },
   { path: "/login", Component: Login }, // ✅ public
   { path: "/registration", Component: Registration }, // ✅ public
+  { path: "/practicedashboard", Component: PracticeDashboard }, // ✅ public
   { path: "*", element: <Navigate to="/login" replace /> },
 ]);
 

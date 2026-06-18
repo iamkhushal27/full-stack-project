@@ -6,23 +6,23 @@ import {
   deletePriority,
   getPriorityByName,
 } from "../services/priority.service.js";
-import { BadRequestError, ConflictError } from "../utils/error.util.js";
+import { ConflictError } from "../utils/error.util.js";
+import { withTransaction } from "../utils/transaction.util.js";
 
 export const createPriorityController = async (req, res) => {
   const { categoryId } = req.params;
   const { priorityName } = req.body;
 
-  const existingPriorityByName = await getPriorityByName({
-    priorityName,
-    category_id: categoryId,
-  });
-  if (existingPriorityByName) {
-    throw new ConflictError("Priority name already exists");
-  }
+  const priority = await withTransaction(async (transaction) => {
+    const existingPriorityByName = await getPriorityByName(
+      { priorityName, category_id: categoryId },
+      { transaction },
+    );
+    if (existingPriorityByName) {
+      throw new ConflictError("Priority name already exists");
+    }
 
-  const priority = await createPriority({
-    priorityName,
-    category_id: categoryId,
+    return createPriority({ priorityName, category_id: categoryId }, { transaction });
   });
 
   res.status(201).json({
@@ -58,21 +58,24 @@ export const updatePriorityController = async (req, res) => {
   const { categoryId, id } = req.params;
   const data = req.body;
 
-  if (data.priorityName) {
-    const existingPriorityByName = await getPriorityByName({
-      priorityName: data.priorityName,
-      category_id: categoryId,
-    });
+  await withTransaction(async (transaction) => {
+    if (data.priorityName) {
+      const existingPriorityByName = await getPriorityByName(
+        { priorityName: data.priorityName, category_id: categoryId },
+        { transaction },
+      );
 
-    if (
-      existingPriorityByName &&
-      Number(existingPriorityByName.id) !== Number(id)
-    ) {
-      throw new ConflictError("Priority name already exists");
+      if (
+        existingPriorityByName &&
+        Number(existingPriorityByName.id) !== Number(id)
+      ) {
+        throw new ConflictError("Priority name already exists");
+      }
     }
-  }
 
-  await updatePriority(id, categoryId, data);
+    await updatePriority(id, categoryId, data, { transaction });
+  });
+
   res.status(200).json({
     status: "success",
     message: "Priority updated successfully",
@@ -81,7 +84,10 @@ export const updatePriorityController = async (req, res) => {
 
 export const deletePriorityController = async (req, res) => {
   const { categoryId, id } = req.params;
-  await deletePriority(id, categoryId);
+
+  await withTransaction(async (transaction) => {
+    await deletePriority(id, categoryId, { transaction });
+  });
 
   res.status(200).json({
     status: "success",

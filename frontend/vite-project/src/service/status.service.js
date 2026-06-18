@@ -14,13 +14,9 @@ export function statusCreate() {
       console.log(error);
     },
     mutationFn: ({ parentId: categoryId, ...data }) => {
-      return api.post(
-        `http://localhost:3000/api/categories/${categoryId}/status`,
-        data,
-        {
-          withCredentials: true,
-        }
-      );
+      return api.post(`/categories/${categoryId}/status`, data, {
+        withCredentials: true,
+      });
     },
   });
   return mutation;
@@ -28,12 +24,9 @@ export function statusCreate() {
 
 export async function getStatuses(categoryId) {
   try {
-    const response = await api.get(
-      `http://localhost:3000/api/categories/${categoryId}/status`,
-      {
-        withCredentials: true,
-      }
-    );
+    const response = await api.get(`/categories/${categoryId}/status`, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
     const message =
@@ -54,13 +47,9 @@ export function editStatus() {
       console.log(error);
     },
     mutationFn: ({ id, parentId: categoryId, ...data }) => {
-      return api.patch(
-        `http://localhost:3000/api/categories/${categoryId}/status/${id}`,
-        data,
-        {
-          withCredentials: true,
-        }
-      );
+      return api.patch(`/categories/${categoryId}/status/${id}`, data, {
+        withCredentials: true,
+      });
     },
   });
   return mutation;
@@ -70,12 +59,9 @@ export function deleteStatus() {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: ({ id, parentId: categoryId }) => {
-      return api.delete(
-        `http://localhost:3000/api/categories/${categoryId}/status/${id}`,
-        {
-          withCredentials: true,
-        }
-      );
+      return api.delete(`/categories/${categoryId}/status/${id}`, {
+        withCredentials: true,
+      });
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({

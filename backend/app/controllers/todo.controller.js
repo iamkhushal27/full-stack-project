@@ -11,6 +11,7 @@ import {
   parsePositiveInt,
   parseOptionalRelationId,
 } from "../utils/parsingFunction.util.js";
+import { withTransaction } from "../utils/transaction.util.js";
 
 export const createTodoController = async (req, res) => {
   const user = req.user;
@@ -23,15 +24,20 @@ export const createTodoController = async (req, res) => {
   const statusId = parseOptionalRelationId(status, "status");
   const dateOnly = parseDateOnly(date);
 
-  const todo = await createTodo({
-    title,
-    description,
-    task_image: uploadImage,
-    date: dateOnly,
-    user_id: user.id,
-    category_id: categoryId,
-    priority_id: priorityId,
-    status_id: statusId,
+  const todo = await withTransaction(async (transaction) => {
+    return createTodo(
+      {
+        title,
+        description,
+        task_image: uploadImage,
+        date: dateOnly,
+        user_id: user.id,
+        category_id: categoryId,
+        priority_id: priorityId,
+        status_id: statusId,
+      },
+      { transaction },
+    );
   });
 
   res.status(201).json({
@@ -100,7 +106,9 @@ export const updateTodoController = async (req, res) => {
     updateData.completed = completed;
   }
 
-  await updateTodo(id, userId, updateData);
+  await withTransaction(async (transaction) => {
+    await updateTodo(id, userId, updateData, { transaction });
+  });
 
   res.status(200).json({
     status: "success",
@@ -111,7 +119,10 @@ export const updateTodoController = async (req, res) => {
 export const deleteTodoController = async (req, res) => {
   const userId = req.user.id;
   const id = parsePositiveInt(req.params.id, "todo id");
-  await deleteTodo(id, userId);
+
+  await withTransaction(async (transaction) => {
+    await deleteTodo(id, userId, { transaction });
+  });
 
   res.status(200).json({
     status: "success",
